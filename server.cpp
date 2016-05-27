@@ -71,11 +71,11 @@ void* client_connect(void* connectFD){
     
     int sock = *(int*)connectFD;
     int read_size;
-    char *message , client_message[2000];
+    char client_message[2000];
+    char welcome_message[200];
+    strcpy(welcome_message, "Welcome to simple P2P server !\n");
 
-    //write(sock , message , strlen(message));
-
-    //write(sock , message , strlen(message));
+    write(sock , welcome_message , strlen(welcome_message));
     
     while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 ){
 		client_message[read_size] = '\0';
