@@ -10,41 +10,55 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#define BACKLOG 30
 using namespace std;
 
 void* client_connect(void *);
 
-int main(){
+int main(int argc, char** args){
+
+    //argc error detect
+    if(argc != 2){
+        printf("Usage: ./server <port_num> \n");
+        return 1;
+    }
+
+    //arguments declare
 	int listenFD, connectFD;
+    int port_num = atoi(args[1]);
 	pthread_t tid;
 	socklen_t addrlen, len;
 	sockaddr_in* client_address, server_address;
 
+    //create listen descriptor
 	listenFD = socket(AF_INET, SOCK_STREAM, 0);
+
+    //setting server informations
 	server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = INADDR_ANY;
-    server_address.sin_port = htons( 8888 );
-     
+    server_address.sin_port = htons( port_num );
+
+    // bind socket and descriptor 
     if( bind(listenFD, (sockaddr *)&server_address, sizeof(server_address)) < 0){
         printf("bind error");
         return 1;
     }
 
-    listen(listenFD, 20);
+    // start listen and backlog is the maxium of connection Simultaneous 
+    listen(listenFD, BACKLOG);
 
     len = sizeof(sockaddr_in);
     while( connectFD = accept(listenFD, (sockaddr*)client_address, &len) ){
         char cli_addr[200];
-        //inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
         inet_ntop(AF_INET, &(client_address->sin_addr), cli_addr, INET_ADDRSTRLEN);
-        printf("Connect from %s %d\n", cli_addr, client_address->sin_port);
-    	if(pthread_create(&tid, NULL, client_connect, (void *)&connectFD )){
+        printf( "Connect from %s %d\n", cli_addr, client_address->sin_port );
+    	if( pthread_create(&tid, NULL, client_connect, (void *)&connectFD ) ){
     		printf("Thread create error\n");
     		return 1;
     	}
     }
 
-    if (connectFD < 0){
+    if ( connectFD < 0 ){
         perror("accept failed");
         return 1;
     }
