@@ -13,11 +13,7 @@
 #include "login.pb.h"
 #include "action.pb.h"
 #include "regist.pb.h"
-#include <google/protobuf/message.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include "gdb_handle.cpp"
 #define BACKLOG 30
 
 void* client_connect(void *);
