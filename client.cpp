@@ -18,14 +18,37 @@
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #define MAXLINE 4096
-using namespace std;
+
+void login_to_server(){
+
+}
+
+void regist_to_server(){
+
+}
+
+void identity(){
+	printf("[L]ogin\t[R]egist\n");
+	std::string command;
+	while( std::cin >> command ){
+		if( command == "L" || command == "l" ){
+			login_to_server();
+			break;
+		}else if(command == "R" || command == "r"){
+			regist_to_server();
+			break;
+		}else{
+			printf("Cannot identify your input\n");
+		}
+	}
+}
 
 google::protobuf::uint32 readHdr(char *buf){
 	google::protobuf::uint32 size;
 	google::protobuf::io::ArrayInputStream ais(buf,4);
 	google::protobuf::io::CodedInputStream coded_input(&ais);
 	coded_input.ReadVarint32(&size); //Decode the HDR and get the size
-	cout<<"size of payload is "<<size<<endl;
+	//cout<<"size of payload is "<<size<<endl;
 	return size;
 }
 
@@ -42,10 +65,11 @@ void readBody(int csock,google::protobuf::uint32 siz){
     google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(siz);
     login.ParseFromCodedStream(&coded_input);
     coded_input.PopLimit(msgLimit);
-    cout<<"Message is "<<login.DebugString();
+    std::cout << login.DebugString();
 }
 
-void str_cli(FILE* fp, int sockfd){
+void client(FILE* fp, int sockfd){
+	identity();
 	//test block
 	int count;
 	char buffer[4];
@@ -104,6 +128,6 @@ int main(int argc, char** argv){
 	}
 
 	// main function
-	str_cli(stdin, sockfd);
+	client(stdin, sockfd);
 	return 0;
 }
