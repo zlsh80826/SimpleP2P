@@ -1,0 +1,7 @@
+package action;
+
+message Login {
+	required string id = 1;
+	required string passwd = 2;
+}
+

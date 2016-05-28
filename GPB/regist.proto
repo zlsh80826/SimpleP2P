@@ -1,0 +1,6 @@
+package action;
+
+message Regist {
+	required string id = 1;
+	required string passwd = 2;
+}
