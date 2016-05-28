@@ -1,4 +1,4 @@
-package action;
+package login;
 
 message Login {
 	required string id = 1;

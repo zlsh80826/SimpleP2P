@@ -10,15 +10,15 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-#include "GPB/login.pb.h"
+#include "login.pb.h"
+#include "action.pb.h"
+#include "regist.pb.h"
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
-//#include "GPB/regist.pb.cpp"
 #define BACKLOG 30
-using namespace std;
 
 void* client_connect(void *);
 
@@ -80,7 +80,7 @@ void* client_connect(void* connectFD){
     int sock = *(int*)connectFD;
 	//test block
 
-	action::Login login;
+	login::Login login;
 	login.set_id("testID");
 	login.set_passwd("testPasswd");
 	int pkg_size = login.ByteSize() + 4;

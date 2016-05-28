@@ -10,7 +10,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <iostream>
-#include "GPB/login.pb.h"
+#include "login.pb.h"
+#include "regist.pb.h"
+#include "action.pb.h"
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -63,7 +65,7 @@ google::protobuf::uint32 readHdr(char *buf){
 
 void readBody(int csock,google::protobuf::uint32 siz){
 	int byteCount;
-	action::Login login;
+	login::Login login;
 	char buffer [siz+4];
   	if( ( byteCount = recv(csock, (void *)buffer, 4+siz, MSG_WAITALL) )== -1 ){
         fprintf(stderr, "Error receiving data %d\n", errno);

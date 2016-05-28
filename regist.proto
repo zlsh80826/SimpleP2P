@@ -1,4 +1,4 @@
-package action;
+package regist;
 
 message Regist {
 	required string id = 1;

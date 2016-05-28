@@ -26,7 +26,7 @@
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 
-namespace action {
+namespace login {
 
 // Internal implementation detail -- do not call these.
 void  protobuf_AddDesc_login_2eproto();
@@ -114,7 +114,7 @@ class Login : public ::google::protobuf::Message {
   inline ::std::string* release_passwd();
   inline void set_allocated_passwd(::std::string* passwd);
 
-  // @@protoc_insertion_point(class_scope:action.Login)
+  // @@protoc_insertion_point(class_scope:login.Login)
  private:
   inline void set_has_id();
   inline void clear_has_id();
@@ -158,7 +158,7 @@ inline void Login::clear_id() {
   clear_has_id();
 }
 inline const ::std::string& Login::id() const {
-  // @@protoc_insertion_point(field_get:action.Login.id)
+  // @@protoc_insertion_point(field_get:login.Login.id)
   return *id_;
 }
 inline void Login::set_id(const ::std::string& value) {
@@ -167,7 +167,7 @@ inline void Login::set_id(const ::std::string& value) {
     id_ = new ::std::string;
   }
   id_->assign(value);
-  // @@protoc_insertion_point(field_set:action.Login.id)
+  // @@protoc_insertion_point(field_set:login.Login.id)
 }
 inline void Login::set_id(const char* value) {
   set_has_id();
@@ -175,7 +175,7 @@ inline void Login::set_id(const char* value) {
     id_ = new ::std::string;
   }
   id_->assign(value);
-  // @@protoc_insertion_point(field_set_char:action.Login.id)
+  // @@protoc_insertion_point(field_set_char:login.Login.id)
 }
 inline void Login::set_id(const char* value, size_t size) {
   set_has_id();
@@ -183,14 +183,14 @@ inline void Login::set_id(const char* value, size_t size) {
     id_ = new ::std::string;
   }
   id_->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:action.Login.id)
+  // @@protoc_insertion_point(field_set_pointer:login.Login.id)
 }
 inline ::std::string* Login::mutable_id() {
   set_has_id();
   if (id_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     id_ = new ::std::string;
   }
-  // @@protoc_insertion_point(field_mutable:action.Login.id)
+  // @@protoc_insertion_point(field_mutable:login.Login.id)
   return id_;
 }
 inline ::std::string* Login::release_id() {
@@ -214,7 +214,7 @@ inline void Login::set_allocated_id(::std::string* id) {
     clear_has_id();
     id_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_set_allocated:action.Login.id)
+  // @@protoc_insertion_point(field_set_allocated:login.Login.id)
 }
 
 // required string passwd = 2;
@@ -234,7 +234,7 @@ inline void Login::clear_passwd() {
   clear_has_passwd();
 }
 inline const ::std::string& Login::passwd() const {
-  // @@protoc_insertion_point(field_get:action.Login.passwd)
+  // @@protoc_insertion_point(field_get:login.Login.passwd)
   return *passwd_;
 }
 inline void Login::set_passwd(const ::std::string& value) {
@@ -243,7 +243,7 @@ inline void Login::set_passwd(const ::std::string& value) {
     passwd_ = new ::std::string;
   }
   passwd_->assign(value);
-  // @@protoc_insertion_point(field_set:action.Login.passwd)
+  // @@protoc_insertion_point(field_set:login.Login.passwd)
 }
 inline void Login::set_passwd(const char* value) {
   set_has_passwd();
@@ -251,7 +251,7 @@ inline void Login::set_passwd(const char* value) {
     passwd_ = new ::std::string;
   }
   passwd_->assign(value);
-  // @@protoc_insertion_point(field_set_char:action.Login.passwd)
+  // @@protoc_insertion_point(field_set_char:login.Login.passwd)
 }
 inline void Login::set_passwd(const char* value, size_t size) {
   set_has_passwd();
@@ -259,14 +259,14 @@ inline void Login::set_passwd(const char* value, size_t size) {
     passwd_ = new ::std::string;
   }
   passwd_->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:action.Login.passwd)
+  // @@protoc_insertion_point(field_set_pointer:login.Login.passwd)
 }
 inline ::std::string* Login::mutable_passwd() {
   set_has_passwd();
   if (passwd_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     passwd_ = new ::std::string;
   }
-  // @@protoc_insertion_point(field_mutable:action.Login.passwd)
+  // @@protoc_insertion_point(field_mutable:login.Login.passwd)
   return passwd_;
 }
 inline ::std::string* Login::release_passwd() {
@@ -290,13 +290,13 @@ inline void Login::set_allocated_passwd(::std::string* passwd) {
     clear_has_passwd();
     passwd_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_set_allocated:action.Login.passwd)
+  // @@protoc_insertion_point(field_set_allocated:login.Login.passwd)
 }
 
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace action
+}  // namespace login
 
 #ifndef SWIG
 namespace google {

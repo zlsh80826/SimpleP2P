@@ -16,7 +16,7 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
-namespace action {
+namespace regist {
 
 namespace {
 
@@ -79,7 +79,7 @@ void protobuf_AddDesc_regist_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\014regist.proto\022\006action\"$\n\006Regist\022\n\n\002id\030\001"
+    "\n\014regist.proto\022\006regist\"$\n\006Regist\022\n\n\002id\030\001"
     " \002(\t\022\016\n\006passwd\030\002 \002(\t", 60);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "regist.proto", &protobuf_RegisterTypes);
@@ -105,7 +105,7 @@ const int Regist::kPasswdFieldNumber;
 Regist::Regist()
   : ::google::protobuf::Message() {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:action.Regist)
+  // @@protoc_insertion_point(constructor:regist.Regist)
 }
 
 void Regist::InitAsDefaultInstance() {
@@ -115,7 +115,7 @@ Regist::Regist(const Regist& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:action.Regist)
+  // @@protoc_insertion_point(copy_constructor:regist.Regist)
 }
 
 void Regist::SharedCtor() {
@@ -127,7 +127,7 @@ void Regist::SharedCtor() {
 }
 
 Regist::~Regist() {
-  // @@protoc_insertion_point(destructor:action.Regist)
+  // @@protoc_insertion_point(destructor:regist.Regist)
   SharedDtor();
 }
 
@@ -184,7 +184,7 @@ bool Regist::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:action.Regist)
+  // @@protoc_insertion_point(parse_start:regist.Regist)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -237,17 +237,17 @@ bool Regist::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:action.Regist)
+  // @@protoc_insertion_point(parse_success:regist.Regist)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:action.Regist)
+  // @@protoc_insertion_point(parse_failure:regist.Regist)
   return false;
 #undef DO_
 }
 
 void Regist::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:action.Regist)
+  // @@protoc_insertion_point(serialize_start:regist.Regist)
   // required string id = 1;
   if (has_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
@@ -272,12 +272,12 @@ void Regist::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
   }
-  // @@protoc_insertion_point(serialize_end:action.Regist)
+  // @@protoc_insertion_point(serialize_end:regist.Regist)
 }
 
 ::google::protobuf::uint8* Regist::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:action.Regist)
+  // @@protoc_insertion_point(serialize_to_array_start:regist.Regist)
   // required string id = 1;
   if (has_id()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
@@ -304,7 +304,7 @@ void Regist::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:action.Regist)
+  // @@protoc_insertion_point(serialize_to_array_end:regist.Regist)
   return target;
 }
 
@@ -402,6 +402,6 @@ void Regist::Swap(Regist* other) {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace action
+}  // namespace regist
 
 // @@protoc_insertion_point(global_scope)
