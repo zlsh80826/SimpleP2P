@@ -21,7 +21,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #define MAXLINE 4096
 
-void login_to_server(){
+void login_to_server(int sockfd){
 	std::string account;
 	char passwd[20];
 	printf("Account:");
@@ -29,7 +29,7 @@ void login_to_server(){
 
 }
 
-void regist_to_server(){
+void regist_to_server(int sockfd){
 	std::string account;
 	std::string password;
 	int passwd_count = 0;
@@ -39,15 +39,15 @@ void regist_to_server(){
 	std::cin >> password;
 }
 
-void identity(){
+void identity(int sockfd){
 	printf("[L]ogin\t[R]egist\n");
 	std::string command;
 	while( std::cin >> command ){
 		if( command == "L" || command == "l" ){
-			login_to_server();
+			login_to_server(sockfd);
 			break;
 		}else if(command == "R" || command == "r"){
-			regist_to_server();
+			regist_to_server(sockfd);
 			break;
 		}else{
 			printf("Cannot identify your input\n");
@@ -56,7 +56,7 @@ void identity(){
 }
 
 void client(FILE* fp, int sockfd){
-	identity();
+	identity(sockfd);
 	//test block
 	int count;
 	char buffer[4];
