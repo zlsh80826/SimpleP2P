@@ -9,6 +9,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <errno.h>
+#include <msgpack.hpp>
 #define MAXLINE 4096
 using namespace std;
 
