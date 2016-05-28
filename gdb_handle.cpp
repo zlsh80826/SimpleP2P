@@ -53,3 +53,4 @@ void readBody(int csock, google::protobuf::uint32 siz){
         return REGIST;
     return UNDEFINE;
  }
+

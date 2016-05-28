@@ -10,11 +10,14 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#include <fstream>
 #include "login.pb.h"
 #include "action.pb.h"
 #include "regist.pb.h"
+#include "data_login.pb.h"
 #include "gdb_handle.cpp"
 #define BACKLOG 30
+Data::LoginData loginData;
 
 void login_check(int sockfd){
     int count;
@@ -60,6 +63,16 @@ void regist_check(int sockfd){
     regist.ParseFromCodedStream(&coded_input);
     coded_input.PopLimit(msgLimit);
     std::cout << regist.DebugString();
+
+    Data::Data* data = loginData.add_logindata();
+    data -> set_id(regist.id());
+    data -> set_password(regist.passwd());
+
+    std::fstream out(".data", std::ios::out | std::ios::trunc | std::ios::binary);
+    if ( !loginData.SerializeToOstream(&out) ) {
+      perror("output_file error");
+    }
+    out.close();
 }
 
 void* client_connect(void *);
@@ -120,6 +133,18 @@ int main(int argc, char** args){
 
 void* client_connect(void* connectFD){
     int sockfd = *(int*)connectFD;
+
+    std::fstream in(".data", std::ios::in | std::ios::binary);
+    if( !loginData.ParseFromIstream(&in) ){
+        printf("Failed to read data\n");
+        return 0;
+    }
+    in.close();
+
+    //debug test
+    for(int i=0; i<loginData.logindata_size(); ++i){
+        std::cout << loginData.logindata(i).DebugString();
+    }
 
     int read_size;
     char client_message[2000];

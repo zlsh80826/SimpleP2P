@@ -13,6 +13,7 @@
 #include "login.pb.h"
 #include "regist.pb.h"
 #include "action.pb.h"
+#include "data_login.pb.h"
 #include "gdb_handle.cpp"
 #define MAXLINE 4096
 
