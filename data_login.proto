@@ -1,0 +1,10 @@
+package Data;
+
+message LoginData {
+	repeated Data loginData = 1;
+}
+
+message Data{
+	required string id = 1;
+	required string password = 2;
+}

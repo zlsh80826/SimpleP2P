@@ -50,7 +50,7 @@ void regist_check(int sockfd){
     int byteCount;
     regist::Regist regist;
     char buffer[size + HDR_SIZE];
-    if( ( byteCount = recv(sockfd, (void *)buffer, size + HDR_SIZE, MSG_WAITALL) )== -1 ){
+    if( ( byteCount = recv(sockfd, (void *)buffer, size + HDR_SIZE, MSG_WAITALL) ) == -1 ){
         perror("Error recviving data");
     }
     google::protobuf::io::ArrayInputStream ais(buffer, size + HDR_SIZE);
