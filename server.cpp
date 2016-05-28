@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-#include "GPB/login.pb.cpp"
+#include "GPB/login.pb.h"
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -45,13 +45,13 @@ int main(int argc, char** args){
     server_address.sin_addr.s_addr = INADDR_ANY;
     server_address.sin_port = htons( port_num );
 
-    // bind socket and descriptor 
+    // bind socket and descriptor
     if( bind(listenFD, (sockaddr *)&server_address, sizeof(server_address)) < 0){
         printf("bind error");
         return 1;
     }
 
-    // start listen and backlog is the maxium of connection Simultaneous 
+    // start listen and backlog is the maxium of connection Simultaneous
     listen(listenFD, BACKLOG);
 
     len = sizeof(sockaddr_in);
@@ -71,7 +71,7 @@ int main(int argc, char** args){
     }
 
 
-     
+
     return 0;
 
 }
@@ -92,26 +92,26 @@ void* client_connect(void* connectFD){
 
 	write(sock, pkt, pkg_size);
 	//test block
-    
+
     int read_size;
     char client_message[2000];
     char welcome_message[200];
     strcpy(welcome_message, "Welcome to simple P2P server !\n");
 
     write(sock, welcome_message, strlen(welcome_message));
-    
+
     while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 ){
 		client_message[read_size] = '\0';
         write(sock , client_message , strlen(client_message));
 		memset(client_message, 0, 2000);
     }
-     
+
     if(read_size == 0) {
         puts("Client disconnected");
         fflush(stdout);
     }else if(read_size == -1){
         perror("recv failed");
     }
-         
+
     return 0;
-} 
+}
