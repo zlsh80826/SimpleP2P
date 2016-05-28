@@ -34,6 +34,7 @@ void login_to_server(int sockfd){
 	std::cin >> account;
 	printf("Password:");
 	std::cin >> passwd;
+
 	login::Login login;
 	login.set_id(account);
 	login.set_passwd(passwd);
@@ -49,12 +50,45 @@ void login_to_server(int sockfd){
 }
 
 void regist_to_server(int sockfd){
+
+	action::Action action;
+	action.set_action("regist");
+	int pkg_size = action.ByteSize() + HDR_SIZE;
+	char* pkg = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+	coded_output -> WriteVarint32(action.ByteSize());
+	action.SerializeToCodedStream(coded_output);
+
+	write(sockfd, pkg, pkg_size);
+
 	std::string account;
-	std::string password;
-	printf("Account:");
-	std::cin >> account;
-	printf("Password:");
-	std::cin >> password;
+	std::string passwd;
+	std::string confirm_passwd;
+	while(true){
+		printf("Account:");
+		std::cin >> account;
+		printf("Password:");
+		std::cin >> passwd;
+		printf("Confirm Password:");
+		std::cin >> confirm_passwd;
+
+		if( passwd == confirm_passwd )
+			break;
+	}
+
+	regist::Regist regist;
+	regist.set_id(account);
+	regist.set_passwd(passwd);
+	pkg_size = regist.ByteSize() + HDR_SIZE;
+	free(pkg);
+	google::protobuf::io::ArrayOutputStream aosl(pkg, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output_l = new google::protobuf::io::CodedOutputStream(&aosl);
+	coded_output_l -> WriteVarint32(regist.ByteSize());
+	regist.SerializeToCodedStream(coded_output_l);
+	std::cout << regist.DebugString();
+
+	write(sockfd, pkg, pkg_size);
 }
 
 void identity(int sockfd){

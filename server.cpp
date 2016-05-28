@@ -40,7 +40,26 @@ void login_check(int sockfd){
 }
 
 void regist_check(int sockfd){
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
 
+    google::protobuf::uint32 size = readHdr(bufferFST);
+    int byteCount;
+    regist::Regist regist;
+    char buffer[size + HDR_SIZE];
+    if( ( byteCount = recv(sockfd, (void *)buffer, size + HDR_SIZE, MSG_WAITALL) )== -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(size);
+    regist.ParseFromCodedStream(&coded_input);
+    coded_input.PopLimit(msgLimit);
+    std::cout << regist.DebugString();
 }
 
 void* client_connect(void *);
