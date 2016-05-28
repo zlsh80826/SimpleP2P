@@ -10,7 +10,13 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-#include <msgpack.hpp>
+#include "GPB/login.pb.cpp"
+#include <google/protobuf/message.h>
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+//#include "GPB/regist.pb.cpp"
 #define BACKLOG 30
 using namespace std;
 
@@ -63,20 +69,36 @@ int main(int argc, char** args){
         perror("accept failed");
         return 1;
     }
+
+
      
     return 0;
 
 }
 
 void* client_connect(void* connectFD){
-    
     int sock = *(int*)connectFD;
+	//test block
+
+	action::Login login;
+	login.set_id("testID");
+	login.set_passwd("testPasswd");
+	int pkg_size = login.ByteSize() + 4;
+	char* pkt = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aos(pkt, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+	coded_output -> WriteVarint32(login.ByteSize());
+	login.SerializeToCodedStream(coded_output);
+
+	write(sock, pkt, pkg_size);
+	//test block
+    
     int read_size;
     char client_message[2000];
     char welcome_message[200];
     strcpy(welcome_message, "Welcome to simple P2P server !\n");
 
-    write(sock , welcome_message , strlen(welcome_message));
+    write(sock, welcome_message, strlen(welcome_message));
     
     while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 ){
 		client_message[read_size] = '\0';
