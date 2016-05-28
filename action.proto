@@ -1,0 +1,5 @@
+package action;
+
+message Action {
+	required string action = 1;
+}

@@ -20,11 +20,21 @@
 #define MAXLINE 4096
 
 void login_to_server(){
+	std::string account;
+	char passwd[20];
+	printf("Account:");
+
 
 }
 
 void regist_to_server(){
-
+	std::string account;
+	std::string password;
+	int passwd_count = 0;
+	printf("Account:");
+	std::cin >> account;
+	printf("Password:");
+	std::cin >> password;
 }
 
 void identity(){
