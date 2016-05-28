@@ -9,9 +9,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <errno.h>
-#include <msgpack.hpp>
 #include <iostream>
-#include "GPB/login.pb.cpp"
+#include "GPB/login.pb.h"
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -90,7 +89,7 @@ void client(FILE* fp, int sockfd){
 		readBody(sockfd, readHdr(buffer));
 	}
 
-	//test block 
+	//test block
 	char sendline[MAXLINE], recvline[MAXLINE];
 
 	read(sockfd, recvline, MAXLINE);
