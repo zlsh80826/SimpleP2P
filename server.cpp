@@ -16,6 +16,14 @@
 #include "gdb_handle.cpp"
 #define BACKLOG 30
 
+void login_check(int sockfd){
+
+}
+
+void regist_check(int sockfd){
+
+}
+
 void* client_connect(void *);
 
 int main(int argc, char** args){
@@ -73,7 +81,14 @@ int main(int argc, char** args){
 }
 
 void* client_connect(void* connectFD){
-    int sock = *(int*)connectFD;
+    int sockfd = *(int*)connectFD;
+
+    int read_size;
+    char client_message[2000];
+    char welcome_message[200];
+    strcpy(welcome_message, "Welcome to simple P2P server !\n");
+
+    write(sockfd, welcome_message, strlen(welcome_message));
 	//test block
 
 	login::Login login;
@@ -86,17 +101,27 @@ void* client_connect(void* connectFD){
 	coded_output -> WriteVarint32(login.ByteSize());
 	login.SerializeToCodedStream(coded_output);
 
-	write(sock, pkt, pkg_size);
+	write(sockfd, pkt, pkg_size);
 	//test block
 
-    int read_size;
-    char client_message[2000];
-    char welcome_message[200];
-    strcpy(welcome_message, "Welcome to simple P2P server !\n");
+    while( true ){
+        int count;
+        char buffer[4];
+        count = recv(sockfd, buffer, 4, MSG_PEEK);
+        if(count == -1)
+            perror("Recv with error");
+        else{
+            ACTION request;
+            request = readAction(sockfd, readHdr(buffer));
+            if (request == LOGIN) {
+                login_check(sockfd);
+            } else if(request == REGIST) {
+                regist_check(sockfd);
+            }
+        }
+    }
 
-    write(sock, welcome_message, strlen(welcome_message));
-
-    while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 ){
+    /*while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 ){
 		client_message[read_size] = '\0';
         write(sock , client_message , strlen(client_message));
 		memset(client_message, 0, 2000);
@@ -107,7 +132,7 @@ void* client_connect(void* connectFD){
         fflush(stdout);
     }else if(read_size == -1){
         perror("recv failed");
-    }
+    }*/
 
     return 0;
 }

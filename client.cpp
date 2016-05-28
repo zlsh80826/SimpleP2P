@@ -14,25 +14,31 @@
 #include "regist.pb.h"
 #include "action.pb.h"
 #include "gdb_handle.cpp"
-#include <google/protobuf/message.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #define MAXLINE 4096
 
 void login_to_server(int sockfd){
+	action::Action action;
+	action.set_action("login");
+	int pkg_size = action.ByteSize() + HDR_SIZE;
+	char* pkg = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+	coded_output -> WriteVarint32(action.ByteSize());
+	action.SerializeToCodedStream(coded_output);
+
+	write(sockfd, pkg, pkg_size);
+
 	std::string account;
-	char passwd[20];
+	std::string password;
 	printf("Account:");
-
-
+	std::cin >> account;
+	printf("Password:");
+	std::cin >> password;
 }
 
 void regist_to_server(int sockfd){
 	std::string account;
 	std::string password;
-	int passwd_count = 0;
 	printf("Account:");
 	std::cin >> account;
 	printf("Password:");
