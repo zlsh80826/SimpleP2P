@@ -29,11 +29,23 @@ void login_to_server(int sockfd){
 	write(sockfd, pkg, pkg_size);
 
 	std::string account;
-	std::string password;
+	std::string passwd;
 	printf("Account:");
 	std::cin >> account;
 	printf("Password:");
-	std::cin >> password;
+	std::cin >> passwd;
+	login::Login login;
+	login.set_id(account);
+	login.set_passwd(passwd);
+	pkg_size = login.ByteSize() + HDR_SIZE;
+	free(pkg);
+	google::protobuf::io::ArrayOutputStream aosl(pkg, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output_l = new google::protobuf::io::CodedOutputStream(&aosl);
+	coded_output_l -> WriteVarint32(login.ByteSize());
+	login.SerializeToCodedStream(coded_output_l);
+	std::cout << login.DebugString();
+
+	write(sockfd, pkg, pkg_size);
 }
 
 void regist_to_server(int sockfd){
