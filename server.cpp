@@ -16,7 +16,6 @@
 #include <time.h>
 #include <set>
 #define BACKLOG 30
-
 Data::LoginData loginData;
 std::set<std::string> file_sets;
 
@@ -31,7 +30,8 @@ void update(){
     printf("%s[offline]\n", ANSI_COLOR_RED);
     for(int i=0; i<loginData.logindata_size(); ++i){
         if( loginData.logindata(i).online() == false){
-            std::cout << loginData.logindata(i).id() << '\n';
+            if( loginData.logindata(i).id() != "" )
+                std::cout << loginData.logindata(i).id() << '\n';
         }
     }
     printf("%s-----------------------------------\n", ANSI_COLOR_RESET);
@@ -41,6 +41,41 @@ void update(){
         perror("output_file error");
     }
     out.close();
+}
+
+void logout(int sockfd){
+    //recv logout info
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
+
+    login::Login login = readLogin(sockfd, readHdr(bufferFST) );
+    //std::cout << login.DebugString();
+
+    //check id and password
+    Data::Data newLogin;
+    newLogin.set_id( login.id() );
+    newLogin.set_password( login.passwd() );
+
+    for(int i=0; i<loginData.logindata_size(); ++i){
+        if( loginData.logindata(i).id() == newLogin.id() &&
+            loginData.logindata(i).password() == newLogin.password() ){
+            sendCheck(sockfd, true);
+            tm* ptr_now;
+            time_t loc_now = 0;
+            time(&loc_now);
+            std::string id = loginData.logindata(i).id();
+            loginData.mutable_logindata(i)->set_online(false);
+            ptr_now = localtime(&loc_now);
+            printf("%s[%d:%d:%d] : [%s] logout %s\n", ANSI_COLOR_RED
+            , ptr_now->tm_hour, ptr_now->tm_min, ptr_now->tm_sec, id.c_str(), ANSI_COLOR_RESET);
+            update();
+            return;
+        }
+    }
+    return;
 }
 
 void recv_file_info(int sockfd, std::set<std::string> &file_sets){
@@ -122,7 +157,7 @@ void login_check(int sockfd){
         perror("Recv with error");
 
     login::Login login = readLogin(sockfd, readHdr(bufferFST) );
-    std::cout << login.DebugString();
+    //std::cout << login.DebugString();
 
     //check id and password
     Data::Data newLogin;
@@ -241,7 +276,7 @@ int main(int argc, char** args){
     while( (connectFD = accept(listenFD, (sockaddr*)client_address, &len)) > 0 ){
         char cli_addr[200];
         inet_ntop(AF_INET, &(client_address->sin_addr), cli_addr, INET_ADDRSTRLEN);
-        printf( "Connect from %s %d\n", cli_addr, client_address->sin_port );
+        //printf( "Connect from %s %d\n", cli_addr, client_address->sin_port );
     	if( pthread_create( &tid, NULL, client_connect, (void *)&connectFD ) ){
     		printf("Thread create error\n");
     		return 1;
@@ -278,7 +313,7 @@ void* client_connect(void* connectFD){
 
 	write(sockfd, pkt, pkg_size);*/
 	//test block
-
+    update();
 
     while( true ){
         int count;
@@ -302,6 +337,7 @@ void* client_connect(void* connectFD){
             } else if ( request == CHAT ) {
                 chat(sockfd);
             } else if (request == LOGOUT ) {
+                logout(sockfd);
                 break;
             } else if (request == RECVFILEINFO ) {
                 recv_file_info(sockfd, file_sets);
@@ -324,6 +360,6 @@ void* client_connect(void* connectFD){
     }else if(read_size == -1){
         perror("recv failed");
     }*/
-    printf("Connection left\n");
+    //printf("Connection left\n");
     return 0;
 }

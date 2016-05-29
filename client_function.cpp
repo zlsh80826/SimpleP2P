@@ -42,7 +42,7 @@ bool login_to_server(int sockfd, login::Login* user){
 	google::protobuf::io::CodedOutputStream* coded_output_l = new google::protobuf::io::CodedOutputStream(&aosl);
 	coded_output_l -> WriteVarint32(login.ByteSize());
 	login.SerializeToCodedStream(coded_output_l);
-	std::cout << login.DebugString();
+	//std::cout << login.DebugString();
 
 	write(sockfd, login_pkg, pkg_size);
 	delete coded_output_l;
@@ -148,12 +148,23 @@ bool identity(int sockfd, login::Login* user){
 	}
 }
 
-void logout(int sockfd){
+void logout(int sockfd, login::Login user){
 	sendAction(sockfd, "logout");
+	int pkg_size = user.ByteSize() + HDR_SIZE;
+	char* login_pkg = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aosl(login_pkg, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output_l = new google::protobuf::io::CodedOutputStream(&aosl);
+	coded_output_l -> WriteVarint32(user.ByteSize());
+	user.SerializeToCodedStream(coded_output_l);
+	//std::cout << user.DebugString();
+
+	write(sockfd, login_pkg, pkg_size);
+	delete coded_output_l;
+
 	printf("%sGood Bye!%s\n", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET);
 }
 
-bool delete_account(int sockfd){
+bool delete_account(int sockfd, login::Login user){
 	// check
 	printf("%s[Warning]%s Are you sure delete account ?(N/y)\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 	std::string NY;
@@ -162,14 +173,22 @@ bool delete_account(int sockfd){
 		return false;
 
 	// get user info
-	sendAction(sockfd, "deleteaccount");
 	std::string account;
 	std::string password;
 	printf("Confirm ID:");
 	std::cin >> account;
+	if( user.id() != account ){
+		printf("%sYou can only suicide!%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+		return false;
+	}
 	printf("Confirm Password:");
 	std::cin >> password;
+	if( user.id() != password ){
+		printf("%sWrong password!%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+		return false;
+	}
 
+	sendAction(sockfd, "deleteaccount");
 	// send info
 	login::DeleteInfo info;
 	info.set_id(account);
@@ -195,7 +214,7 @@ bool delete_account(int sockfd){
 			printf("%sPermission denied%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 		}else{
 			printf("%sDelete success%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
-			logout(sockfd);
+			logout(sockfd, user);
 			return true;
 		}
 		return false;
