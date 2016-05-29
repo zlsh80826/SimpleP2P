@@ -24,7 +24,8 @@ void update(){
     printf("%s[online]\n", ANSI_COLOR_GREEN);
     for(int i=0; i<loginData.logindata_size(); ++i){
         if( loginData.logindata(i).online() == true){
-            std::cout << loginData.logindata(i).id() << '\n';
+            if( loginData.logindata(i).id() != "" )
+                std::cout << loginData.logindata(i).id() << '\n';
         }
     }
     printf("%s[offline]\n", ANSI_COLOR_RED);
@@ -132,6 +133,7 @@ void delete_account(int sockfd){
             loginData.logindata(i).password() == newInfo.password() ){
             loginData.mutable_logindata(i)->set_id("");
             loginData.mutable_logindata(i)->set_password("");
+            loginData.mutable_logindata(i)->set_online(false);
             sendCheck(sockfd, true);
             update();
         }
