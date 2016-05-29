@@ -13,6 +13,7 @@
 #include <fstream>
 #include "gdb_handle.cpp"
 #include "define.h"
+#include <time.h>
 #include <set>
 #define BACKLOG 30
 
@@ -114,6 +115,13 @@ void login_check(int sockfd){
         if( loginData.logindata(i).id() == newLogin.id() &&
             loginData.logindata(i).password() == newLogin.password() ){
             sendCheck(sockfd, true);
+            tm* ptr_now;
+            time_t loc_now = 0;
+            time(&loc_now);
+            std::string id = loginData.logindata(i).id();
+            ptr_now = localtime(&loc_now);
+            printf("%s[%d:%d:%d] : [%s] login %s\n", ANSI_COLOR_GREEN
+            , ptr_now->tm_hour, ptr_now->tm_min, ptr_now->tm_sec, id.c_str(), ANSI_COLOR_RESET);
             return;
         }
     }
