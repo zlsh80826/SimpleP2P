@@ -56,7 +56,7 @@ bool login_to_server(int sockfd){
 
 }
 
-void regist_to_server(int sockfd){
+bool regist_to_server(int sockfd){
 
 	action::Action action;
 	action.set_action("regist");
@@ -100,6 +100,21 @@ void regist_to_server(int sockfd){
 	std::cout << regist.DebugString();
 	delete coded_output_l;
 	write(sockfd, reg_pkg, pkg_size);
+
+	// recv regist permit
+	int count;
+	char buffer[4];
+	count = recv(sockfd, buffer, 4, MSG_PEEK);
+	if(count == -1)
+		printf("recv check pkg error\n");
+	else{
+		if( !readCheck(sockfd, readHdr(buffer)) ){
+			printf("%sThis ID is used!%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+		}else{
+			printf("%sRegist success%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
+		}
+		return false;
+	}
 }
 
 bool identity(int sockfd){
@@ -112,7 +127,7 @@ bool identity(int sockfd){
 				printf("%sLogin success%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
 				return true;
 			}else{
-				printf("%sWrong id or account%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+				printf("%sWrong id or password%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 				return false;
 			}
 		}else if(command == "R" || command == "r"){

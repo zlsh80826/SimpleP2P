@@ -44,6 +44,7 @@ void login_check(int sockfd){
 }
 
 void regist_check(int sockfd){
+    //recv regist
     int count;
     char bufferFST[4];
     count = recv(sockfd, bufferFST, 4, MSG_PEEK);
@@ -65,6 +66,18 @@ void regist_check(int sockfd){
     coded_input.PopLimit(msgLimit);
     std::cout << regist.DebugString();
 
+    //check id and password
+    Data::Data newRegist;
+    newRegist.set_id( regist.id() );
+    newRegist.set_password( regist.passwd() );
+
+    for(int i=0; i<loginData.logindata_size(); ++i){
+        if( loginData.logindata(i).id() == newRegist.id() ){
+            sendCheck(sockfd, false);
+            return;
+        }
+    }
+
     Data::Data* data = loginData.add_logindata();
     data -> set_id(regist.id());
     data -> set_password(regist.passwd());
@@ -74,6 +87,7 @@ void regist_check(int sockfd){
       perror("output_file error");
     }
     out.close();
+    sendCheck(sockfd, true);
 }
 
 void* client_connect(void *);
