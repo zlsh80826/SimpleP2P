@@ -1,0 +1,9 @@
+package file;
+
+message Files {
+	repeated File files = 1;
+}
+
+message File {
+	required string file_name = 1;
+}

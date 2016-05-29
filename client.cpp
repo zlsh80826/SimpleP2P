@@ -17,6 +17,8 @@ void client(FILE* fp, int sockfd){
 
 	printf("%sWelcome to Simple Peer to Peer server%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
 
+	sendFileInfo(sockfd);
+
 	while(true){
 		printf("[K]ill\t\t[L]ogout\t[S]earchInfo\n[D]ownload\t[C]hat\n");
 		std::string cmd;

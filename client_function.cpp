@@ -1,10 +1,13 @@
 #include <iostream>
+#include <vector>
+#include <dirent.h>
 #include "login.pb.h"
 #include "regist.pb.h"
 #include "action.pb.h"
 #include "data_login.pb.h"
 #include "check.pb.h"
 #include "gdb_handle.cpp"
+#include "file.pb.h"
 #include "define.h"
 
 bool login_to_server(int sockfd){
@@ -195,6 +198,19 @@ bool delete_account(int sockfd){
 	return false;
 }
 
+int getdir(std::string dir, std::vector<std::string>& files){
+	DIR *dp;
+	dirent* dirp;
+	if((dp = opendir(dir.c_str())) == NULL)
+		return false;
+	while( (dirp = readdir(dp)) != NULL ){
+		if( strcmp(dirp->d_name, ".")  && strcmp(dirp->d_name, "..") )
+			files.push_back(std::string(dirp->d_name));
+	}
+	closedir(dp);
+	return true;
+}
+
 void search_info(int sockfd){
 	printf("Into search_info function\n");
 	sendAction(sockfd, "searchinfo");
@@ -210,3 +226,25 @@ void chat(int sockfd){
 	sendAction(sockfd, "chat");
 }
 
+
+void sendFileInfo(int sockfd){
+	sendAction(sockfd, "sendfileinfo");
+	std::string dir(".");
+	std::vector<std::string> files_vec;
+    getdir(dir, files_vec);
+
+    file::Files files;
+    for(int i=0; i<files_vec.size(); ++i){
+    	files.add_files();
+    }
+    /*
+    int size = files.size();
+    send(connectFD, &size, sizeof(size), 0);
+
+    for(int i=0; i<files.size(); i++){
+    	char buffer[MAX_file_name];
+    	strcpy(buffer, files[i].c_str());
+    	send(connectFD, &buffer, sizeof(buffer), 0);
+    }
+    */
+}
