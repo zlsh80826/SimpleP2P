@@ -16,6 +16,28 @@ void client(FILE* fp, int sockfd){
 	while( !identity(sockfd) );
 
 	printf("%sWelcome to Simple Peer to Peer server%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
+
+	while(true){
+		printf("[D]elete[A]ccount\t[L]ogout\t[S]earchInfo\n[D]ownload\t[C]hat\n");
+		std::string cmd;
+		std::cin >> cmd;
+		if( cmd == "DA" || cmd == "da" ){
+			delete_account(sockfd);
+		}else if( cmd == "L" || cmd == "l" ){
+			printf("%sGood Bye!%s\n", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET);
+			break;
+		}else if( cmd == "S" || cmd == "s" ){
+			search_info(sockfd);
+		}else if( cmd == "D" || cmd == "d" ){
+			download(sockfd);
+		}else if( cmd == "C" || cmd == "c" ){
+			chat(sockfd);
+		}else{
+			printf("%sInvalid Input !%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+		}
+	}
+
+	/*
 	//test block
 	int count;
 	char buffer[4];
@@ -39,7 +61,7 @@ void client(FILE* fp, int sockfd){
 			return;
 		}
 		fputs(recvline, stdout);
-	}
+	}*/
 }
 
 int main(int argc, char** argv){

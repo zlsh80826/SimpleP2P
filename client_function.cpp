@@ -139,3 +139,19 @@ bool identity(int sockfd){
 		}
 	}
 }
+
+void delete_account(int sockfd){
+	printf("Into delete account function\n");
+}
+
+void search_info(int sockfd){
+	printf("Into search_info function\n");
+}
+
+void download(int sockfd){
+	printf("Into download function\n");
+}
+
+void chat(int sockfd){
+	printf("Into chat function\n");
+}
