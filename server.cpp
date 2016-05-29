@@ -98,11 +98,16 @@ void recv_file_info(int sockfd, std::set<std::string> &file_sets){
     google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
     files.ParseFromCodedStream(&coded_input);
 
+    printf("%sNew file: ", ANSI_COLOR_GREEN);
     for(int i=0; i<files.files_size(); ++i){
         file::File file = files.files(i);
         file_sets.insert( file.file_name() );
-        //std::cout << file.file_name() << '\n';
+        std::cout << file.file_name();
+        if( i != files.files_size()-1 )
+            std::cout << ", ";
     }
+    printf("%s\n", ANSI_COLOR_RESET);
+    update();
 }
 
 void delete_account(int sockfd){
@@ -176,7 +181,6 @@ void login_check(int sockfd){
             ptr_now = localtime(&loc_now);
             printf("%s[%d:%d:%d] : [%s] login %s\n", ANSI_COLOR_GREEN
             , ptr_now->tm_hour, ptr_now->tm_min, ptr_now->tm_sec, id.c_str(), ANSI_COLOR_RESET);
-            update();
             return;
         }
     }
