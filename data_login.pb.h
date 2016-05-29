@@ -204,6 +204,25 @@ class Data : public ::google::protobuf::Message {
   inline bool online() const;
   inline void set_online(bool value);
 
+  // optional string ip = 4 [default = ""];
+  inline bool has_ip() const;
+  inline void clear_ip();
+  static const int kIpFieldNumber = 4;
+  inline const ::std::string& ip() const;
+  inline void set_ip(const ::std::string& value);
+  inline void set_ip(const char* value);
+  inline void set_ip(const char* value, size_t size);
+  inline ::std::string* mutable_ip();
+  inline ::std::string* release_ip();
+  inline void set_allocated_ip(::std::string* ip);
+
+  // optional int32 port = 5 [default = 8888];
+  inline bool has_port() const;
+  inline void clear_port();
+  static const int kPortFieldNumber = 5;
+  inline ::google::protobuf::int32 port() const;
+  inline void set_port(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:Data.Data)
  private:
   inline void set_has_id();
@@ -212,6 +231,10 @@ class Data : public ::google::protobuf::Message {
   inline void clear_has_password();
   inline void set_has_online();
   inline void clear_has_online();
+  inline void set_has_ip();
+  inline void clear_has_ip();
+  inline void set_has_port();
+  inline void clear_has_port();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -219,7 +242,9 @@ class Data : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* id_;
   ::std::string* password_;
+  ::std::string* ip_;
   bool online_;
+  ::google::protobuf::int32 port_;
   friend void  protobuf_AddDesc_data_5flogin_2eproto();
   friend void protobuf_AssignDesc_data_5flogin_2eproto();
   friend void protobuf_ShutdownFile_data_5flogin_2eproto();
@@ -442,6 +467,106 @@ inline void Data::set_online(bool value) {
   set_has_online();
   online_ = value;
   // @@protoc_insertion_point(field_set:Data.Data.online)
+}
+
+// optional string ip = 4 [default = ""];
+inline bool Data::has_ip() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Data::set_has_ip() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Data::clear_has_ip() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void Data::clear_ip() {
+  if (ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_->clear();
+  }
+  clear_has_ip();
+}
+inline const ::std::string& Data::ip() const {
+  // @@protoc_insertion_point(field_get:Data.Data.ip)
+  return *ip_;
+}
+inline void Data::set_ip(const ::std::string& value) {
+  set_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_ = new ::std::string;
+  }
+  ip_->assign(value);
+  // @@protoc_insertion_point(field_set:Data.Data.ip)
+}
+inline void Data::set_ip(const char* value) {
+  set_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_ = new ::std::string;
+  }
+  ip_->assign(value);
+  // @@protoc_insertion_point(field_set_char:Data.Data.ip)
+}
+inline void Data::set_ip(const char* value, size_t size) {
+  set_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_ = new ::std::string;
+  }
+  ip_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:Data.Data.ip)
+}
+inline ::std::string* Data::mutable_ip() {
+  set_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:Data.Data.ip)
+  return ip_;
+}
+inline ::std::string* Data::release_ip() {
+  clear_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = ip_;
+    ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void Data::set_allocated_ip(::std::string* ip) {
+  if (ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete ip_;
+  }
+  if (ip) {
+    set_has_ip();
+    ip_ = ip;
+  } else {
+    clear_has_ip();
+    ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:Data.Data.ip)
+}
+
+// optional int32 port = 5 [default = 8888];
+inline bool Data::has_port() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void Data::set_has_port() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void Data::clear_has_port() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void Data::clear_port() {
+  port_ = 8888;
+  clear_has_port();
+}
+inline ::google::protobuf::int32 Data::port() const {
+  // @@protoc_insertion_point(field_get:Data.Data.port)
+  return port_;
+}
+inline void Data::set_port(::google::protobuf::int32 value) {
+  set_has_port();
+  port_ = value;
+  // @@protoc_insertion_point(field_set:Data.Data.port)
 }
 
 

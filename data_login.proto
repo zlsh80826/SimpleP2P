@@ -8,4 +8,6 @@ message Data{
 	required string id = 1;
 	required string password = 2;
 	optional bool online = 3 [default = false];
+	optional string ip = 4 [default = ""];
+	optional int32 port = 5 [default = 8888];
 }
