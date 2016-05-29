@@ -3,6 +3,11 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include "login.pb.h"
+#include "action.pb.h"
+#include "regist.pb.h"
+#include "data_login.pb.h"
+#include "check.pb.h"
 #include <iostream>
 #define HDR_SIZE 4
 enum ACTION{LOGIN, REGIST, UNDEFINE};
@@ -72,4 +77,34 @@ bool readCheck(int csock, google::protobuf::uint32 size){
     if( check.check() == true )
         return true;
     return false;
- }
+}
+
+login::Login readLogin(int csock, google::protobuf::uint32 size){
+    //recv login
+    int byteCount;
+    login::Login login;
+    char buffer[size + HDR_SIZE];
+    if( ( byteCount = recv(csock, (void *)buffer, size + HDR_SIZE, MSG_WAITALL) )== -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(size);
+    login.ParseFromCodedStream(&coded_input);
+
+    return login;
+}
+
+void sendCheck(int sockfd, bool flags){
+    check::Check check;
+    check.set_check(flags);
+    int pkg_size = check.ByteSize() + 4;
+    char* pkt = new char[pkg_size];
+    google::protobuf::io::ArrayOutputStream aos(pkt, pkg_size);
+    google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+    coded_output -> WriteVarint32(check.ByteSize());
+    check.SerializeToCodedStream(coded_output);
+
+    write(sockfd, pkt, pkg_size);
+}

@@ -5,6 +5,7 @@
 #include "data_login.pb.h"
 #include "check.pb.h"
 #include "gdb_handle.cpp"
+#include "define.h"
 
 bool login_to_server(int sockfd){
 
@@ -19,6 +20,7 @@ bool login_to_server(int sockfd){
 	action.SerializeToCodedStream(coded_output);
 
 	write(sockfd, pkg, pkg_size);
+	delete coded_output;
 
 	// send login info
 	std::string account;
@@ -32,14 +34,15 @@ bool login_to_server(int sockfd){
 	login.set_id(account);
 	login.set_passwd(passwd);
 	pkg_size = login.ByteSize() + HDR_SIZE;
-	free(pkg);
-	google::protobuf::io::ArrayOutputStream aosl(pkg, pkg_size);
+	char* login_pkg = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aosl(login_pkg, pkg_size);
 	google::protobuf::io::CodedOutputStream* coded_output_l = new google::protobuf::io::CodedOutputStream(&aosl);
 	coded_output_l -> WriteVarint32(login.ByteSize());
 	login.SerializeToCodedStream(coded_output_l);
 	std::cout << login.DebugString();
 
-	write(sockfd, pkg, pkg_size);
+	write(sockfd, login_pkg, pkg_size);
+	delete coded_output_l;
 
 	// recv login permit
 	int count;
@@ -65,6 +68,7 @@ void regist_to_server(int sockfd){
 	action.SerializeToCodedStream(coded_output);
 
 	write(sockfd, pkg, pkg_size);
+	delete coded_output;
 
 	std::string account;
 	std::string passwd;
@@ -79,34 +83,44 @@ void regist_to_server(int sockfd){
 
 		if( passwd == confirm_passwd )
 			break;
+		else{
+			printf("%sYour password is invalid !%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+		}
 	}
 
 	regist::Regist regist;
 	regist.set_id(account);
 	regist.set_passwd(passwd);
 	pkg_size = regist.ByteSize() + HDR_SIZE;
-	free(pkg);
-	google::protobuf::io::ArrayOutputStream aosl(pkg, pkg_size);
+	char* reg_pkg = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aosl(reg_pkg, pkg_size);
 	google::protobuf::io::CodedOutputStream* coded_output_l = new google::protobuf::io::CodedOutputStream(&aosl);
 	coded_output_l -> WriteVarint32(regist.ByteSize());
 	regist.SerializeToCodedStream(coded_output_l);
 	std::cout << regist.DebugString();
-
-	write(sockfd, pkg, pkg_size);
+	delete coded_output_l;
+	write(sockfd, reg_pkg, pkg_size);
 }
 
-void identity(int sockfd){
+bool identity(int sockfd){
+	printf("---------------------------------------\n");
 	printf("[L]ogin\t[R]egist\n");
 	std::string command;
 	while( std::cin >> command ){
 		if( command == "L" || command == "l" ){
-			login_to_server(sockfd);
-			break;
+			if( login_to_server(sockfd) ){
+				printf("%sLogin success%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
+				return true;
+			}else{
+				printf("%sWrong id or account%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+				return false;
+			}
 		}else if(command == "R" || command == "r"){
 			regist_to_server(sockfd);
-			break;
+			return false;
 		}else{
 			printf("Cannot identify your input\n");
+			return false;
 		}
 	}
 }

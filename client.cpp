@@ -13,7 +13,9 @@
 #define MAXLINE 4096
 
 void client(FILE* fp, int sockfd){
-	identity(sockfd);
+	while( !identity(sockfd) );
+
+	printf("%sWelcome to Simple Peer to Peer server%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
 	//test block
 	int count;
 	char buffer[4];
@@ -23,8 +25,8 @@ void client(FILE* fp, int sockfd){
 	else{
 		readBody(sockfd, readHdr(buffer));
 	}
-
 	//test block
+
 	char sendline[MAXLINE], recvline[MAXLINE];
 
 	read(sockfd, recvline, MAXLINE);
@@ -48,7 +50,7 @@ int main(int argc, char** argv){
 	struct sockaddr_in server_address;
 
 	//usage detect
-	if(argc!=3){
+	if( argc!=3 ){
 		printf("usage:server_client <IP address>\n");
 		return 0;
 	}

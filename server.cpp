@@ -11,35 +11,36 @@
 #include <time.h>
 #include <unistd.h>
 #include <fstream>
-#include "login.pb.h"
-#include "action.pb.h"
-#include "regist.pb.h"
-#include "data_login.pb.h"
 #include "gdb_handle.cpp"
 #define BACKLOG 30
 Data::LoginData loginData;
 
 void login_check(int sockfd){
+    //recv login info
     int count;
     char bufferFST[4];
     count = recv(sockfd, bufferFST, 4, MSG_PEEK);
     if(count == -1)
         perror("Recv with error");
 
-    google::protobuf::uint32 size = readHdr(bufferFST);
-    int byteCount;
-    login::Login login;
-    char buffer[size + HDR_SIZE];
-    if( ( byteCount = recv(sockfd, (void *)buffer, size + HDR_SIZE, MSG_WAITALL) )== -1 ){
-        perror("Error recviving data");
-    }
-    google::protobuf::io::ArrayInputStream ais(buffer, size + HDR_SIZE);
-    google::protobuf::io::CodedInputStream coded_input(&ais);
-    coded_input.ReadVarint32(&size);
-    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(size);
-    login.ParseFromCodedStream(&coded_input);
-    coded_input.PopLimit(msgLimit);
+    login::Login login = readLogin(sockfd, readHdr(bufferFST) );
     std::cout << login.DebugString();
+
+    //check id and password
+    Data::Data newLogin;
+    newLogin.set_id( login.id() );
+    newLogin.set_password( login.passwd() );
+
+    for(int i=0; i<loginData.logindata_size(); ++i){
+        if( loginData.logindata(i).id() == newLogin.id() &&
+            loginData.logindata(i).password() == newLogin.password() ){
+            sendCheck(sockfd, true);
+            return;
+        }
+    }
+
+    sendCheck(sockfd, false);
+    return;
 }
 
 void regist_check(int sockfd){
@@ -85,12 +86,20 @@ int main(int argc, char** args){
         return 1;
     }
 
+    //read login data
+    std::fstream in(".data", std::ios::in | std::ios::binary);
+    if( !loginData.ParseFromIstream(&in) ){
+        printf("Failed to read data\n");
+        return 0;
+    }
+    in.close();
+
     //arguments declare
 	int listenFD, connectFD;
     int port_num = atoi(args[1]);
 	pthread_t tid;
 	socklen_t addrlen, len;
-	sockaddr_in* client_address, server_address;
+	sockaddr_in* client_address = new sockaddr_in, server_address;
 
     //create listen descriptor
 	listenFD = socket(AF_INET, SOCK_STREAM, 0);
@@ -107,14 +116,16 @@ int main(int argc, char** args){
     }
 
     // start listen and backlog is the maxium of connection Simultaneous
-    listen(listenFD, BACKLOG);
+    if (-1 == listen(listenFD, BACKLOG)) {
+        perror("listen");
+    }
 
     len = sizeof(sockaddr_in);
-    while( connectFD = accept(listenFD, (sockaddr*)client_address, &len) ){
+    while( (connectFD = accept(listenFD, (sockaddr*)client_address, &len)) > 0 ){
         char cli_addr[200];
         inet_ntop(AF_INET, &(client_address->sin_addr), cli_addr, INET_ADDRSTRLEN);
         printf( "Connect from %s %d\n", cli_addr, client_address->sin_port );
-    	if( pthread_create(&tid, NULL, client_connect, (void *)&connectFD ) ){
+    	if( pthread_create( &tid, NULL, client_connect, (void *)&connectFD ) ){
     		printf("Thread create error\n");
     		return 1;
     	}
@@ -125,28 +136,12 @@ int main(int argc, char** args){
         return 1;
     }
 
-
-
     return 0;
-
 }
 
 void* client_connect(void* connectFD){
     int sockfd = *(int*)connectFD;
-
-    std::fstream in(".data", std::ios::in | std::ios::binary);
-    if( !loginData.ParseFromIstream(&in) ){
-        printf("Failed to read data\n");
-        return 0;
-    }
-    in.close();
-
-    //debug test
-    for(int i=0; i<loginData.logindata_size(); ++i){
-        std::cout << loginData.logindata(i).DebugString();
-    }
-
-    int read_size;
+    /*int read_size;
     char client_message[2000];
     char welcome_message[200];
     strcpy(welcome_message, "Welcome to simple P2P server !\n");
@@ -164,8 +159,9 @@ void* client_connect(void* connectFD){
 	coded_output -> WriteVarint32(login.ByteSize());
 	login.SerializeToCodedStream(coded_output);
 
-	write(sockfd, pkt, pkg_size);
+	write(sockfd, pkt, pkg_size);*/
 	//test block
+
 
     while( true ){
         int count;
@@ -183,6 +179,7 @@ void* client_connect(void* connectFD){
             }
         }
     }
+
 
     /*while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 ){
 		client_message[read_size] = '\0';
