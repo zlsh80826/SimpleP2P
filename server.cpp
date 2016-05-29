@@ -17,7 +17,39 @@
 Data::LoginData loginData;
 
 void delete_account(int sockfd){
+
     printf("Into delete account function\n");
+
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
+
+    login::DeleteInfo info = readDeleteInfo(sockfd, readHdr(bufferFST) );
+    std::cout << info.DebugString();
+
+    Data::Data newInfo;
+    newInfo.set_id( info.id() );
+    newInfo.set_password( info.passwd() );
+
+    for(int i=0; i<loginData.logindata_size(); ++i){
+        if( loginData.logindata(i).id() == newInfo.id() &&
+            loginData.logindata(i).password() == newInfo.password() ){
+            loginData.mutable_logindata(i)->set_id("");
+            loginData.mutable_logindata(i)->set_password("");
+            sendCheck(sockfd, true);
+            std::fstream out(".data", std::ios::out | std::ios::trunc | std::ios::binary);
+            if ( !loginData.SerializeToOstream(&out) ) {
+                perror("output_file error");
+            }
+            out.close();
+            return;
+        }
+    }
+
+    sendCheck(sockfd, false);
+    return;
 }
 
 void search_info(int sockfd){

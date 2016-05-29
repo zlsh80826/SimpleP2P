@@ -5,3 +5,7 @@ message Login {
 	required string passwd = 2;
 }
 
+message DeleteInfo {
+	required string id = 1;
+	required string passwd = 2;
+}

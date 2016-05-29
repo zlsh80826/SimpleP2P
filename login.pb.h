@@ -34,6 +34,7 @@ void protobuf_AssignDesc_login_2eproto();
 void protobuf_ShutdownFile_login_2eproto();
 
 class Login;
+class DeleteInfo;
 
 // ===================================================================
 
@@ -133,6 +134,105 @@ class Login : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static Login* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class DeleteInfo : public ::google::protobuf::Message {
+ public:
+  DeleteInfo();
+  virtual ~DeleteInfo();
+
+  DeleteInfo(const DeleteInfo& from);
+
+  inline DeleteInfo& operator=(const DeleteInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const DeleteInfo& default_instance();
+
+  void Swap(DeleteInfo* other);
+
+  // implements Message ----------------------------------------------
+
+  DeleteInfo* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const DeleteInfo& from);
+  void MergeFrom(const DeleteInfo& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string id = 1;
+  inline bool has_id() const;
+  inline void clear_id();
+  static const int kIdFieldNumber = 1;
+  inline const ::std::string& id() const;
+  inline void set_id(const ::std::string& value);
+  inline void set_id(const char* value);
+  inline void set_id(const char* value, size_t size);
+  inline ::std::string* mutable_id();
+  inline ::std::string* release_id();
+  inline void set_allocated_id(::std::string* id);
+
+  // required string passwd = 2;
+  inline bool has_passwd() const;
+  inline void clear_passwd();
+  static const int kPasswdFieldNumber = 2;
+  inline const ::std::string& passwd() const;
+  inline void set_passwd(const ::std::string& value);
+  inline void set_passwd(const char* value);
+  inline void set_passwd(const char* value, size_t size);
+  inline ::std::string* mutable_passwd();
+  inline ::std::string* release_passwd();
+  inline void set_allocated_passwd(::std::string* passwd);
+
+  // @@protoc_insertion_point(class_scope:login.DeleteInfo)
+ private:
+  inline void set_has_id();
+  inline void clear_has_id();
+  inline void set_has_passwd();
+  inline void clear_has_passwd();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* id_;
+  ::std::string* passwd_;
+  friend void  protobuf_AddDesc_login_2eproto();
+  friend void protobuf_AssignDesc_login_2eproto();
+  friend void protobuf_ShutdownFile_login_2eproto();
+
+  void InitAsDefaultInstance();
+  static DeleteInfo* default_instance_;
 };
 // ===================================================================
 
@@ -291,6 +391,162 @@ inline void Login::set_allocated_passwd(::std::string* passwd) {
     passwd_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:login.Login.passwd)
+}
+
+// -------------------------------------------------------------------
+
+// DeleteInfo
+
+// required string id = 1;
+inline bool DeleteInfo::has_id() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void DeleteInfo::set_has_id() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void DeleteInfo::clear_has_id() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void DeleteInfo::clear_id() {
+  if (id_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    id_->clear();
+  }
+  clear_has_id();
+}
+inline const ::std::string& DeleteInfo::id() const {
+  // @@protoc_insertion_point(field_get:login.DeleteInfo.id)
+  return *id_;
+}
+inline void DeleteInfo::set_id(const ::std::string& value) {
+  set_has_id();
+  if (id_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    id_ = new ::std::string;
+  }
+  id_->assign(value);
+  // @@protoc_insertion_point(field_set:login.DeleteInfo.id)
+}
+inline void DeleteInfo::set_id(const char* value) {
+  set_has_id();
+  if (id_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    id_ = new ::std::string;
+  }
+  id_->assign(value);
+  // @@protoc_insertion_point(field_set_char:login.DeleteInfo.id)
+}
+inline void DeleteInfo::set_id(const char* value, size_t size) {
+  set_has_id();
+  if (id_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    id_ = new ::std::string;
+  }
+  id_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:login.DeleteInfo.id)
+}
+inline ::std::string* DeleteInfo::mutable_id() {
+  set_has_id();
+  if (id_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    id_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:login.DeleteInfo.id)
+  return id_;
+}
+inline ::std::string* DeleteInfo::release_id() {
+  clear_has_id();
+  if (id_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = id_;
+    id_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void DeleteInfo::set_allocated_id(::std::string* id) {
+  if (id_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete id_;
+  }
+  if (id) {
+    set_has_id();
+    id_ = id;
+  } else {
+    clear_has_id();
+    id_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:login.DeleteInfo.id)
+}
+
+// required string passwd = 2;
+inline bool DeleteInfo::has_passwd() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void DeleteInfo::set_has_passwd() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void DeleteInfo::clear_has_passwd() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void DeleteInfo::clear_passwd() {
+  if (passwd_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    passwd_->clear();
+  }
+  clear_has_passwd();
+}
+inline const ::std::string& DeleteInfo::passwd() const {
+  // @@protoc_insertion_point(field_get:login.DeleteInfo.passwd)
+  return *passwd_;
+}
+inline void DeleteInfo::set_passwd(const ::std::string& value) {
+  set_has_passwd();
+  if (passwd_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    passwd_ = new ::std::string;
+  }
+  passwd_->assign(value);
+  // @@protoc_insertion_point(field_set:login.DeleteInfo.passwd)
+}
+inline void DeleteInfo::set_passwd(const char* value) {
+  set_has_passwd();
+  if (passwd_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    passwd_ = new ::std::string;
+  }
+  passwd_->assign(value);
+  // @@protoc_insertion_point(field_set_char:login.DeleteInfo.passwd)
+}
+inline void DeleteInfo::set_passwd(const char* value, size_t size) {
+  set_has_passwd();
+  if (passwd_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    passwd_ = new ::std::string;
+  }
+  passwd_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:login.DeleteInfo.passwd)
+}
+inline ::std::string* DeleteInfo::mutable_passwd() {
+  set_has_passwd();
+  if (passwd_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    passwd_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:login.DeleteInfo.passwd)
+  return passwd_;
+}
+inline ::std::string* DeleteInfo::release_passwd() {
+  clear_has_passwd();
+  if (passwd_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = passwd_;
+    passwd_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void DeleteInfo::set_allocated_passwd(::std::string* passwd) {
+  if (passwd_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete passwd_;
+  }
+  if (passwd) {
+    set_has_passwd();
+    passwd_ = passwd;
+  } else {
+    clear_has_passwd();
+    passwd_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:login.DeleteInfo.passwd)
 }
 
 

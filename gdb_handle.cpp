@@ -3,6 +3,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include <google/protobuf/repeated_field.h>
 #include "login.pb.h"
 #include "action.pb.h"
 #include "regist.pb.h"
@@ -131,4 +132,21 @@ void sendCheck(int sockfd, bool flags){
     check.SerializeToCodedStream(coded_output);
 
     write(sockfd, pkt, pkg_size);
+}
+
+login::DeleteInfo readDeleteInfo(int csock, google::protobuf::uint32 size){
+    //recv login
+    int byteCount;
+    login::DeleteInfo info;
+    char buffer[size + HDR_SIZE];
+    if( ( byteCount = recv(csock, (void *)buffer, size + HDR_SIZE, MSG_WAITALL) )== -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(size);
+    info.ParseFromCodedStream(&coded_input);
+
+    return info;
 }

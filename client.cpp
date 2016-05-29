@@ -22,10 +22,10 @@ void client(FILE* fp, int sockfd){
 		std::string cmd;
 		std::cin >> cmd;
 		if( cmd == "K" || cmd == "k" ){
-			delete_account(sockfd);
+			if(delete_account(sockfd))
+				break;
 		}else if( cmd == "L" || cmd == "l" ){
 			logout(sockfd);
-			printf("%sGood Bye!%s\n", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET);
 			break;
 		}else if( cmd == "S" || cmd == "s" ){
 			search_info(sockfd);
