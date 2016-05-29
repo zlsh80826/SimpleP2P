@@ -10,7 +10,7 @@
 #include "file.pb.h"
 #include "define.h"
 
-bool login_to_server(int sockfd){
+bool login_to_server(int sockfd, login::Login* user){
 
 	// send login action
 	action::Action action;
@@ -54,7 +54,12 @@ bool login_to_server(int sockfd){
 	if(count == -1)
 		printf("recv check pkg error\n");
 	else{
-		return readCheck(sockfd, readHdr(buffer));
+		if(readCheck(sockfd, readHdr(buffer))){
+			user->set_id(login.id());
+			user->set_passwd(login.passwd());
+			return true;
+		}
+		return false;
 	}
 
 }
@@ -120,13 +125,13 @@ bool regist_to_server(int sockfd){
 	}
 }
 
-bool identity(int sockfd){
+bool identity(int sockfd, login::Login* user){
 	printf("---------------------------------------\n");
 	printf("[L]ogin\t[R]egist\n");
 	std::string command;
 	while( std::cin >> command ){
 		if( command == "L" || command == "l" ){
-			if( login_to_server(sockfd) ){
+			if( login_to_server(sockfd, user) ){
 				printf("%sLogin success%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
 				return true;
 			}else{

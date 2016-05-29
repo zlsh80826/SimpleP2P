@@ -20,6 +20,29 @@
 Data::LoginData loginData;
 std::set<std::string> file_sets;
 
+void update(){
+    printf("-----------------------------------\n");
+    printf("%s[online]\n", ANSI_COLOR_GREEN);
+    for(int i=0; i<loginData.logindata_size(); ++i){
+        if( loginData.logindata(i).online() == true){
+            std::cout << loginData.logindata(i).id() << '\n';
+        }
+    }
+    printf("%s[offline]\n", ANSI_COLOR_RED);
+    for(int i=0; i<loginData.logindata_size(); ++i){
+        if( loginData.logindata(i).online() == false){
+            std::cout << loginData.logindata(i).id() << '\n';
+        }
+    }
+    printf("%s-----------------------------------\n", ANSI_COLOR_RESET);
+
+    std::fstream out(".data", std::ios::out | std::ios::trunc | std::ios::binary);
+    if ( !loginData.SerializeToOstream(&out) ) {
+        perror("output_file error");
+    }
+    out.close();
+}
+
 void recv_file_info(int sockfd, std::set<std::string> &file_sets){
     int count;
     char bufferFST[4];
@@ -43,7 +66,7 @@ void recv_file_info(int sockfd, std::set<std::string> &file_sets){
     for(int i=0; i<files.files_size(); ++i){
         file::File file = files.files(i);
         file_sets.insert( file.file_name() );
-        std::cout << file.file_name() << '\n';
+        //std::cout << file.file_name() << '\n';
     }
 }
 
@@ -70,12 +93,7 @@ void delete_account(int sockfd){
             loginData.mutable_logindata(i)->set_id("");
             loginData.mutable_logindata(i)->set_password("");
             sendCheck(sockfd, true);
-            std::fstream out(".data", std::ios::out | std::ios::trunc | std::ios::binary);
-            if ( !loginData.SerializeToOstream(&out) ) {
-                perror("output_file error");
-            }
-            out.close();
-            return;
+            update();
         }
     }
 
@@ -119,9 +137,11 @@ void login_check(int sockfd){
             time_t loc_now = 0;
             time(&loc_now);
             std::string id = loginData.logindata(i).id();
+            loginData.mutable_logindata(i)->set_online(true);
             ptr_now = localtime(&loc_now);
             printf("%s[%d:%d:%d] : [%s] login %s\n", ANSI_COLOR_GREEN
             , ptr_now->tm_hour, ptr_now->tm_min, ptr_now->tm_sec, id.c_str(), ANSI_COLOR_RESET);
+            update();
             return;
         }
     }
@@ -169,11 +189,7 @@ void regist_check(int sockfd){
     data -> set_id(regist.id());
     data -> set_password(regist.passwd());
 
-    std::fstream out(".data", std::ios::out | std::ios::trunc | std::ios::binary);
-    if ( !loginData.SerializeToOstream(&out) ) {
-      perror("output_file error");
-    }
-    out.close();
+    update();
     sendCheck(sockfd, true);
 }
 

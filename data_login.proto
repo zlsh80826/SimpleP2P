@@ -7,4 +7,5 @@ message LoginData {
 message Data{
 	required string id = 1;
 	required string password = 2;
+	optional bool online = 3 [default = false];
 }

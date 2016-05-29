@@ -52,9 +52,10 @@ void protobuf_AssignDesc_data_5flogin_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(LoginData));
   Data_descriptor_ = file->message_type(1);
-  static const int Data_offsets_[2] = {
+  static const int Data_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Data, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Data, password_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Data, online_),
   };
   Data_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -102,8 +103,9 @@ void protobuf_AddDesc_data_5flogin_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\020data_login.proto\022\004Data\"*\n\tLoginData\022\035\n"
-    "\tloginData\030\001 \003(\0132\n.Data.Data\"$\n\004Data\022\n\n\002"
-    "id\030\001 \002(\t\022\020\n\010password\030\002 \002(\t", 106);
+    "\tloginData\030\001 \003(\0132\n.Data.Data\";\n\004Data\022\n\n\002"
+    "id\030\001 \002(\t\022\020\n\010password\030\002 \002(\t\022\025\n\006online\030\003 \001"
+    "(\010:\005false", 129);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "data_login.proto", &protobuf_RegisterTypes);
   LoginData::default_instance_ = new LoginData();
@@ -345,6 +347,7 @@ void LoginData::Swap(LoginData* other) {
 #ifndef _MSC_VER
 const int Data::kIdFieldNumber;
 const int Data::kPasswordFieldNumber;
+const int Data::kOnlineFieldNumber;
 #endif  // !_MSC_VER
 
 Data::Data()
@@ -368,6 +371,7 @@ void Data::SharedCtor() {
   _cached_size_ = 0;
   id_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   password_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  online_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -409,7 +413,7 @@ Data* Data::New() const {
 }
 
 void Data::Clear() {
-  if (_has_bits_[0 / 32] & 3) {
+  if (_has_bits_[0 / 32] & 7) {
     if (has_id()) {
       if (id_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         id_->clear();
@@ -420,6 +424,7 @@ void Data::Clear() {
         password_->clear();
       }
     }
+    online_ = false;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -461,6 +466,21 @@ bool Data::MergePartialFromCodedStream(
             this->password().data(), this->password().length(),
             ::google::protobuf::internal::WireFormat::PARSE,
             "password");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_online;
+        break;
+      }
+
+      // optional bool online = 3 [default = false];
+      case 3: {
+        if (tag == 24) {
+         parse_online:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &online_)));
+          set_has_online();
         } else {
           goto handle_unusual;
         }
@@ -513,6 +533,11 @@ void Data::SerializeWithCachedSizes(
       2, this->password(), output);
   }
 
+  // optional bool online = 3 [default = false];
+  if (has_online()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->online(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -545,6 +570,11 @@ void Data::SerializeWithCachedSizes(
         2, this->password(), target);
   }
 
+  // optional bool online = 3 [default = false];
+  if (has_online()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->online(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -569,6 +599,11 @@ int Data::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->password());
+    }
+
+    // optional bool online = 3 [default = false];
+    if (has_online()) {
+      total_size += 1 + 1;
     }
 
   }
@@ -604,6 +639,9 @@ void Data::MergeFrom(const Data& from) {
     if (from.has_password()) {
       set_password(from.password());
     }
+    if (from.has_online()) {
+      set_online(from.online());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -630,6 +668,7 @@ void Data::Swap(Data* other) {
   if (other != this) {
     std::swap(id_, other->id_);
     std::swap(password_, other->password_);
+    std::swap(online_, other->online_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

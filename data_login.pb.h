@@ -197,12 +197,21 @@ class Data : public ::google::protobuf::Message {
   inline ::std::string* release_password();
   inline void set_allocated_password(::std::string* password);
 
+  // optional bool online = 3 [default = false];
+  inline bool has_online() const;
+  inline void clear_online();
+  static const int kOnlineFieldNumber = 3;
+  inline bool online() const;
+  inline void set_online(bool value);
+
   // @@protoc_insertion_point(class_scope:Data.Data)
  private:
   inline void set_has_id();
   inline void clear_has_id();
   inline void set_has_password();
   inline void clear_has_password();
+  inline void set_has_online();
+  inline void clear_has_online();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -210,6 +219,7 @@ class Data : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* id_;
   ::std::string* password_;
+  bool online_;
   friend void  protobuf_AddDesc_data_5flogin_2eproto();
   friend void protobuf_AssignDesc_data_5flogin_2eproto();
   friend void protobuf_ShutdownFile_data_5flogin_2eproto();
@@ -408,6 +418,30 @@ inline void Data::set_allocated_password(::std::string* password) {
     password_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:Data.Data.password)
+}
+
+// optional bool online = 3 [default = false];
+inline bool Data::has_online() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Data::set_has_online() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Data::clear_has_online() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Data::clear_online() {
+  online_ = false;
+  clear_has_online();
+}
+inline bool Data::online() const {
+  // @@protoc_insertion_point(field_get:Data.Data.online)
+  return online_;
+}
+inline void Data::set_online(bool value) {
+  set_has_online();
+  online_ = value;
+  // @@protoc_insertion_point(field_set:Data.Data.online)
 }
 
 

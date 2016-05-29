@@ -13,7 +13,8 @@
 #define MAXLINE 4096
 
 void client(FILE* fp, int sockfd){
-	while( !identity(sockfd) );
+	login::Login user;
+	while( !identity(sockfd, &user) );
 
 	printf("%sWelcome to Simple Peer to Peer server%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
 
