@@ -235,16 +235,18 @@ void sendFileInfo(int sockfd){
 
     file::Files files;
     for(int i=0; i<files_vec.size(); ++i){
-    	files.add_files();
+    	file::File* file = files.add_files();
+    	file->set_file_name(files_vec[i]);
     }
-    /*
-    int size = files.size();
-    send(connectFD, &size, sizeof(size), 0);
 
-    for(int i=0; i<files.size(); i++){
-    	char buffer[MAX_file_name];
-    	strcpy(buffer, files[i].c_str());
-    	send(connectFD, &buffer, sizeof(buffer), 0);
-    }
-    */
+	int pkg_size = files.ByteSize() + HDR_SIZE;
+	char* pkg = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+	coded_output -> WriteVarint32(files.ByteSize());
+	files.SerializeToCodedStream(coded_output);
+
+	write(sockfd, pkg, pkg_size);
+	delete coded_output;
+
 }

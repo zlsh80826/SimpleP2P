@@ -9,9 +9,10 @@
 #include "regist.pb.h"
 #include "data_login.pb.h"
 #include "check.pb.h"
+#include "file.pb.h"
 #include <iostream>
 #define HDR_SIZE 4
-enum ACTION{LOGIN, REGIST, DELETEACCOUNT, SEARCHINFO, DOWNLOAD, CHAT, LOGOUT, UNDEFINE};
+enum ACTION{LOGIN, REGIST, DELETEACCOUNT, SEARCHINFO, DOWNLOAD, CHAT, LOGOUT, RECVFILEINFO, UNDEFINE};
 
 google::protobuf::uint32 readHdr(char *buf){
 	google::protobuf::uint32 size;
@@ -67,6 +68,8 @@ ACTION readAction(int csock, google::protobuf::uint32 size){
         return CHAT;
     if( action.action() == "logout" )
         return LOGOUT;
+    if( action.action() == "sendfileinfo" )
+        return RECVFILEINFO;
     return UNDEFINE;
  }
 

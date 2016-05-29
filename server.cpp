@@ -13,8 +13,38 @@
 #include <fstream>
 #include "gdb_handle.cpp"
 #include "define.h"
+#include <set>
 #define BACKLOG 30
+
 Data::LoginData loginData;
+std::set<std::string> file_sets;
+
+void recv_file_info(int sockfd, std::set<std::string> &file_sets){
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
+
+    google::protobuf::uint32 pkg_size = readHdr(bufferFST);
+    int byteCount;
+    file::Files files;
+    char buffer[pkg_size + HDR_SIZE];
+    if( ( byteCount = recv(sockfd, (void *)buffer, pkg_size + HDR_SIZE, MSG_WAITALL) ) == -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, pkg_size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&pkg_size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
+    files.ParseFromCodedStream(&coded_input);
+
+    for(int i=0; i<files.files_size(); ++i){
+        file::File file = files.files(i);
+        file_sets.insert( file.file_name() );
+        std::cout << file.file_name() << '\n';
+    }
+}
 
 void delete_account(int sockfd){
 
@@ -249,6 +279,8 @@ void* client_connect(void* connectFD){
                 chat(sockfd);
             } else if (request == LOGOUT ) {
                 break;
+            } else if (request == RECVFILEINFO ) {
+                recv_file_info(sockfd, file_sets);
             } else {
                 printf("%sBugssssssssssss%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
             }
