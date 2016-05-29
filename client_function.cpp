@@ -105,7 +105,7 @@ bool regist_to_server(int sockfd){
 	google::protobuf::io::CodedOutputStream* coded_output_l = new google::protobuf::io::CodedOutputStream(&aosl);
 	coded_output_l -> WriteVarint32(regist.ByteSize());
 	regist.SerializeToCodedStream(coded_output_l);
-	std::cout << regist.DebugString();
+	//std::cout << regist.DebugString();
 	delete coded_output_l;
 	write(sockfd, reg_pkg, pkg_size);
 
@@ -236,8 +236,34 @@ int getdir(std::string dir, std::vector<std::string>& files){
 }
 
 void search_info(int sockfd){
-	printf("Into search_info function\n");
 	sendAction(sockfd, "searchinfo");
+
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
+
+    google::protobuf::uint32 pkg_size = readHdr(bufferFST);
+    int byteCount;
+    file::Files files;
+    char buffer[pkg_size + HDR_SIZE];
+    if( ( byteCount = recv(sockfd, (void *)buffer, pkg_size + HDR_SIZE, MSG_WAITALL) ) == -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, pkg_size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&pkg_size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
+    files.ParseFromCodedStream(&coded_input);
+
+    printf("%sFile: ", ANSI_COLOR_GREEN);
+    for(int i=0; i<files.files_size(); ++i){
+        std::cout << files.files(i).file_name();
+        if( i != files.files_size()-1 )
+            std::cout << ", ";
+    }
+    printf("%s\n", ANSI_COLOR_RESET);
 }
 
 void download(int sockfd){

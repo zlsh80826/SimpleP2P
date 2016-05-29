@@ -144,7 +144,22 @@ void delete_account(int sockfd){
 }
 
 void search_info(int sockfd){
-    printf("Into search_info function\n");
+    file::Files files;
+    for(auto items=file_sets.begin(); items!=file_sets.end(); ++items){
+        file::File* file = files.add_files();
+        file->set_file_name(*items);
+        //std::cout << file->DebugString();
+    }
+
+    int pkg_size = files.ByteSize() + HDR_SIZE;
+    char* pkg = new char[pkg_size];
+    google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+    google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+    coded_output -> WriteVarint32(files.ByteSize());
+    files.SerializeToCodedStream(coded_output);
+
+    write(sockfd, pkg, pkg_size);
+    delete coded_output;
 }
 
 void download(int sockfd){
