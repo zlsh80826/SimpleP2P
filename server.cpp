@@ -31,6 +31,10 @@ struct thread_info{
     }
 };
 
+void send_online_info(int sockfd){
+
+}
+
 void update(){
     printf("-----------------------------------\n");
     printf("%s[online]\n", ANSI_COLOR_GREEN);
@@ -182,7 +186,7 @@ void chat(int sockfd){
     printf("Into chat function\n");
 }
 
-void login_check(int sockfd){
+void login_check(int sockfd, std::string addr, int port){
     //recv login info
     int count;
     char bufferFST[4];
@@ -207,6 +211,8 @@ void login_check(int sockfd){
             time(&loc_now);
             std::string id = loginData.logindata(i).id();
             loginData.mutable_logindata(i)->set_online(true);
+            loginData.mutable_logindata(i)->set_ip(addr);
+            loginData.mutable_logindata(i)->set_port(port);
             ptr_now = localtime(&loc_now);
             printf("%s[%d:%d:%d] : [%s] login %s\n", ANSI_COLOR_GREEN
             , ptr_now->tm_hour, ptr_now->tm_min, ptr_now->tm_sec, id.c_str(), ANSI_COLOR_RESET);
@@ -365,7 +371,7 @@ void* client_connect(void* info){
             ACTION request;
             request = readAction(sockfd, readHdr(buffer));
             if ( request == LOGIN ) {
-                login_check(sockfd);
+                login_check(sockfd, addr, port);
             } else if ( request == REGIST ) {
                 regist_check(sockfd);
             } else if ( request == DELETEACCOUNT ) {
@@ -381,6 +387,8 @@ void* client_connect(void* info){
                 break;
             } else if (request == RECVFILEINFO ) {
                 recv_file_info(sockfd, file_sets);
+            } else if (request == ONLINEINFO){
+                send_online_info(sockfd);
             } else {
                 printf("%sBugssssssssssss%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
             }

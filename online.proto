@@ -1,0 +1,9 @@
+package online;
+
+message OnlineSheet {
+	repeated OnlinePerson sheets = 1;
+}
+
+message OnlinePerson{
+	required string name = 1;
+}
