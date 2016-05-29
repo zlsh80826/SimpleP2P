@@ -32,7 +32,7 @@ void readBody(int csock, google::protobuf::uint32 siz){
     std::cout << login.DebugString();
 }
 
- ACTION readAction(int csock, google::protobuf::uint32 size){
+ACTION readAction(int csock, google::protobuf::uint32 size){
     //recv action
     int byteCount;
     action::Action action;
@@ -54,3 +54,22 @@ void readBody(int csock, google::protobuf::uint32 siz){
     return UNDEFINE;
  }
 
+bool readCheck(int csock, google::protobuf::uint32 size){
+    //recv check
+    int byteCount;
+    check::Check check;
+    char buffer[size + HDR_SIZE];
+    if( ( byteCount = recv(csock, (void *)buffer, size + HDR_SIZE, MSG_WAITALL) )== -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(size);
+    check.ParseFromCodedStream(&coded_input);
+
+    //parse check
+    if( check.check() == true )
+        return true;
+    return false;
+ }

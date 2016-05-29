@@ -90,26 +90,23 @@ class Check : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // repeated bool check = 1;
-  inline int check_size() const;
+  // required bool check = 1;
+  inline bool has_check() const;
   inline void clear_check();
   static const int kCheckFieldNumber = 1;
-  inline bool check(int index) const;
-  inline void set_check(int index, bool value);
-  inline void add_check(bool value);
-  inline const ::google::protobuf::RepeatedField< bool >&
-      check() const;
-  inline ::google::protobuf::RepeatedField< bool >*
-      mutable_check();
+  inline bool check() const;
+  inline void set_check(bool value);
 
   // @@protoc_insertion_point(class_scope:check.Check)
  private:
+  inline void set_has_check();
+  inline void clear_has_check();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
-  ::google::protobuf::RepeatedField< bool > check_;
+  bool check_;
   friend void  protobuf_AddDesc_check_2eproto();
   friend void protobuf_AssignDesc_check_2eproto();
   friend void protobuf_ShutdownFile_check_2eproto();
@@ -124,34 +121,28 @@ class Check : public ::google::protobuf::Message {
 
 // Check
 
-// repeated bool check = 1;
-inline int Check::check_size() const {
-  return check_.size();
+// required bool check = 1;
+inline bool Check::has_check() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Check::set_has_check() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Check::clear_has_check() {
+  _has_bits_[0] &= ~0x00000001u;
 }
 inline void Check::clear_check() {
-  check_.Clear();
+  check_ = false;
+  clear_has_check();
 }
-inline bool Check::check(int index) const {
+inline bool Check::check() const {
   // @@protoc_insertion_point(field_get:check.Check.check)
-  return check_.Get(index);
-}
-inline void Check::set_check(int index, bool value) {
-  check_.Set(index, value);
-  // @@protoc_insertion_point(field_set:check.Check.check)
-}
-inline void Check::add_check(bool value) {
-  check_.Add(value);
-  // @@protoc_insertion_point(field_add:check.Check.check)
-}
-inline const ::google::protobuf::RepeatedField< bool >&
-Check::check() const {
-  // @@protoc_insertion_point(field_list:check.Check.check)
   return check_;
 }
-inline ::google::protobuf::RepeatedField< bool >*
-Check::mutable_check() {
-  // @@protoc_insertion_point(field_mutable_list:check.Check.check)
-  return &check_;
+inline void Check::set_check(bool value) {
+  set_has_check();
+  check_ = value;
+  // @@protoc_insertion_point(field_set:check.Check.check)
 }
 
 

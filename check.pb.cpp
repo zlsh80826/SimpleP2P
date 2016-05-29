@@ -79,7 +79,7 @@ void protobuf_AddDesc_check_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\013check.proto\022\005check\"\026\n\005Check\022\r\n\005check\030\001"
-    " \003(\010", 44);
+    " \002(\010", 44);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "check.proto", &protobuf_RegisterTypes);
   Check::default_instance_ = new Check();
@@ -118,6 +118,7 @@ Check::Check(const Check& from)
 
 void Check::SharedCtor() {
   _cached_size_ = 0;
+  check_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -153,7 +154,7 @@ Check* Check::New() const {
 }
 
 void Check::Clear() {
-  check_.Clear();
+  check_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -168,21 +169,16 @@ bool Check::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated bool check = 1;
+      // required bool check = 1;
       case 1: {
         if (tag == 8) {
-         parse_check:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 1, 8, input, this->mutable_check())));
-        } else if (tag == 10) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, this->mutable_check())));
+                 input, &check_)));
+          set_has_check();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(8)) goto parse_check;
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -212,10 +208,9 @@ failure:
 void Check::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:check.Check)
-  // repeated bool check = 1;
-  for (int i = 0; i < this->check_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(
-      1, this->check(i), output);
+  // required bool check = 1;
+  if (has_check()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->check(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -228,10 +223,9 @@ void Check::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Check::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:check.Check)
-  // repeated bool check = 1;
-  for (int i = 0; i < this->check_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteBoolToArray(1, this->check(i), target);
+  // required bool check = 1;
+  if (has_check()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->check(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -245,13 +239,13 @@ void Check::SerializeWithCachedSizes(
 int Check::ByteSize() const {
   int total_size = 0;
 
-  // repeated bool check = 1;
-  {
-    int data_size = 0;
-    data_size = 1 * this->check_size();
-    total_size += 1 * this->check_size() + data_size;
-  }
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required bool check = 1;
+    if (has_check()) {
+      total_size += 1 + 1;
+    }
 
+  }
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -277,7 +271,11 @@ void Check::MergeFrom(const ::google::protobuf::Message& from) {
 
 void Check::MergeFrom(const Check& from) {
   GOOGLE_CHECK_NE(&from, this);
-  check_.MergeFrom(from.check_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_check()) {
+      set_check(from.check());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -294,13 +292,14 @@ void Check::CopyFrom(const Check& from) {
 }
 
 bool Check::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
 
   return true;
 }
 
 void Check::Swap(Check* other) {
   if (other != this) {
-    check_.Swap(&other->check_);
+    std::swap(check_, other->check_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

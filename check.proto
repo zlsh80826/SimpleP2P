@@ -1,5 +1,5 @@
 package check;
 
 message Check {
-	repeated bool check = 1;
+	required bool check = 1;
 }
