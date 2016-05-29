@@ -215,6 +215,8 @@ void* client_connect(void* connectFD){
                 download(sockfd);
             } else if ( request == CHAT ) {
                 chat(sockfd);
+            } else if (request == LOGOUT ) {
+                break;
             } else {
                 printf("%sBugssssssssssss%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
             }
@@ -234,6 +236,6 @@ void* client_connect(void* connectFD){
     }else if(read_size == -1){
         perror("recv failed");
     }*/
-
+    printf("Connection left\n");
     return 0;
 }

@@ -159,3 +159,7 @@ void chat(int sockfd){
 	printf("Into chat function\n");
 	sendAction(sockfd, "chat");
 }
+
+void logout(int sockfd){
+	sendAction(sockfd, "logout");
+}

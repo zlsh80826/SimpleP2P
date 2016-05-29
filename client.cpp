@@ -18,12 +18,13 @@ void client(FILE* fp, int sockfd){
 	printf("%sWelcome to Simple Peer to Peer server%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
 
 	while(true){
-		printf("[D]elete[A]ccount\t[L]ogout\t[S]earchInfo\n[D]ownload\t[C]hat\n");
+		printf("[K]ill\t\t[L]ogout\t[S]earchInfo\n[D]ownload\t[C]hat\n");
 		std::string cmd;
 		std::cin >> cmd;
-		if( cmd == "DA" || cmd == "da" ){
+		if( cmd == "K" || cmd == "k" ){
 			delete_account(sockfd);
 		}else if( cmd == "L" || cmd == "l" ){
+			logout(sockfd);
 			printf("%sGood Bye!%s\n", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET);
 			break;
 		}else if( cmd == "S" || cmd == "s" ){
