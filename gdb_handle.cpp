@@ -15,6 +15,18 @@
 #define HDR_SIZE 4
 enum ACTION{LOGIN, REGIST, DELETEACCOUNT, SEARCHINFO, DOWNLOAD, CHAT, LOGOUT, RECVFILEINFO, ONLINEINFO, UNDEFINE};
 
+struct thread_info{
+    int sockfd;
+    std::string address;
+    int port;
+
+    thread_info(int sockfd, std::string address, int port){
+        this->sockfd = sockfd;
+        this->address = address;
+        this->port = port;
+    }
+};
+
 google::protobuf::uint32 readHdr(char *buf){
 	google::protobuf::uint32 size;
 	google::protobuf::io::ArrayInputStream ais(buf,4);

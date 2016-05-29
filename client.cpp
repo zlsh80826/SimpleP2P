@@ -9,8 +9,78 @@
 #include <time.h>
 #include <unistd.h>
 #include <errno.h>
+#include <time.h>
+#include <thread>
+#include <pthread.h>
 #include "client_function.cpp"
 #define MAXLINE 4096
+#define BACKLOG 30
+
+void* client_connect(void* info){
+    thread_info* new_info = (thread_info* )info;
+    int sockfd = new_info -> sockfd;
+    std::string addr = new_info -> address;
+    int port = new_info -> port;
+
+    int read_size;
+    char client_message[200];
+    while( (read_size = recv(sockfd, client_message, 2000, 0)) > 0 ){
+		client_message[read_size] = '\0';
+        printf("%s\n", client_message);
+		memset(client_message, 0, 2000);
+    }
+
+    if(read_size == 0) {
+        puts("Client disconnected");
+        fflush(stdout);
+    }else if(read_size == -1){
+        perror("recv failed");
+    }
+    return 0;
+}
+
+int new_listen_thread(){
+	int listenFD, connectFD;
+	srand(time(NULL));
+    int port_num = rand()%10000 + 20000;
+    std::cout << port_num << '\n';
+
+	pthread_t tid;
+	socklen_t addrlen, len;
+	sockaddr_in* client_address = new sockaddr_in, server_address;
+
+    //create listen descriptor
+	listenFD = socket(AF_INET, SOCK_STREAM, 0);
+
+    //setting server informations
+	server_address.sin_family = AF_INET;
+    server_address.sin_addr.s_addr = INADDR_ANY;
+    server_address.sin_port = htons( port_num );
+
+    // bind socket and descriptor
+    if( bind(listenFD, (sockaddr *)&server_address, sizeof(server_address)) < 0){
+        printf("bind error");
+        return 1;
+    }
+
+    // start listen and backlog is the maxium of connection Simultaneous
+    if (-1 == listen(listenFD, BACKLOG)) {
+        perror("listen");
+    }
+
+    len = sizeof(sockaddr_in);
+    while( (connectFD = accept(listenFD, (sockaddr*)client_address, &len)) > 0 ){
+        char cli_addr[200];
+        inet_ntop(AF_INET, &(client_address->sin_addr), cli_addr, INET_ADDRSTRLEN);
+        std::string addr(cli_addr);
+        thread_info* info = new thread_info(connectFD, addr, client_address->sin_port);
+        //printf( "Connect from %s %d\n", cli_addr, client_address->sin_port );
+    	if( pthread_create( &tid, NULL, client_connect, (void *)info ) ){
+    		printf("Thread create error\n");
+    		return 1;
+    	}
+    }
+}
 
 void client(FILE* fp, int sockfd){
 	login::Login user;
@@ -20,8 +90,10 @@ void client(FILE* fp, int sockfd){
 
 	sendFileInfo(sockfd);
 
+	std::thread listenThread(new_listen_thread);
+
 	while(true){
-		printf("[K]ill\t\t[L]ogout\t[S]earchInfo\n[D]ownload\t[C]hat\t[O]line\n");
+		printf("[K]ill\t\t[L]ogout\t[S]earchInfo\n[D]ownload\t[C]hat\t\t[O]line\n");
 		std::string cmd;
 		std::cin >> cmd;
 		if( cmd == "K" || cmd == "k" ){
@@ -43,6 +115,7 @@ void client(FILE* fp, int sockfd){
 		}
 	}
 
+	listenThread.detach();
 	/*
 	//test block
 	int count;

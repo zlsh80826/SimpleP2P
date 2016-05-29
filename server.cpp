@@ -19,18 +19,6 @@
 Data::LoginData loginData;
 std::set<std::string> file_sets;
 
-struct thread_info{
-    int sockfd;
-    std::string address;
-    int port;
-
-    thread_info(int sockfd, std::string address, int port){
-        this->sockfd = sockfd;
-        this->address = address;
-        this->port = port;
-    }
-};
-
 void send_online_info(int sockfd){
     online::OnlineSheet sheet;
     for(int i=0; i<loginData.logindata_size(); ++i){
