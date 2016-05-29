@@ -142,16 +142,20 @@ bool identity(int sockfd){
 
 void delete_account(int sockfd){
 	printf("Into delete account function\n");
+	sendAction(sockfd, "deleteaccount");
 }
 
 void search_info(int sockfd){
 	printf("Into search_info function\n");
+	sendAction(sockfd, "searchinfo");
 }
 
 void download(int sockfd){
 	printf("Into download function\n");
+	sendAction(sockfd, "download");
 }
 
 void chat(int sockfd){
 	printf("Into chat function\n");
+	sendAction(sockfd, "chat");
 }

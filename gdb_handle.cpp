@@ -10,7 +10,7 @@
 #include "check.pb.h"
 #include <iostream>
 #define HDR_SIZE 4
-enum ACTION{LOGIN, REGIST, UNDEFINE};
+enum ACTION{LOGIN, REGIST, DELETEACCOUNT, SEARCHINFO, DOWNLOAD, CHAT, UNDEFINE};
 
 google::protobuf::uint32 readHdr(char *buf){
 	google::protobuf::uint32 size;
@@ -56,6 +56,14 @@ ACTION readAction(int csock, google::protobuf::uint32 size){
         return LOGIN;
     if( action.action() == "regist" )
         return REGIST;
+    if( action.action() == "deleteaccount" )
+        return DELETEACCOUNT;
+    if( action.action() == "searchinfo" )
+        return SEARCHINFO;
+    if( action.action() == "download" )
+        return DOWNLOAD;
+    if( action.action() == "chat" )
+        return CHAT;
     return UNDEFINE;
  }
 
@@ -77,6 +85,20 @@ bool readCheck(int csock, google::protobuf::uint32 size){
     if( check.check() == true )
         return true;
     return false;
+}
+
+void sendAction(int sockfd, std::string act){
+    action::Action action;
+    action.set_action(act);
+    int pkg_size = action.ByteSize() + HDR_SIZE;
+    char* pkg = new char[pkg_size];
+    google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+    google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+    coded_output -> WriteVarint32(action.ByteSize());
+    action.SerializeToCodedStream(coded_output);
+
+    write(sockfd, pkg, pkg_size);
+    delete coded_output;
 }
 
 login::Login readLogin(int csock, google::protobuf::uint32 size){

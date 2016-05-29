@@ -12,8 +12,25 @@
 #include <unistd.h>
 #include <fstream>
 #include "gdb_handle.cpp"
+#include "define.h"
 #define BACKLOG 30
 Data::LoginData loginData;
+
+void delete_account(int sockfd){
+    printf("Into delete account function\n");
+}
+
+void search_info(int sockfd){
+    printf("Into search_info function\n");
+}
+
+void download(int sockfd){
+    printf("Into download function\n");
+}
+
+void chat(int sockfd){
+    printf("Into chat function\n");
+}
 
 void login_check(int sockfd){
     //recv login info
@@ -186,10 +203,20 @@ void* client_connect(void* connectFD){
         else{
             ACTION request;
             request = readAction(sockfd, readHdr(buffer));
-            if (request == LOGIN) {
+            if ( request == LOGIN ) {
                 login_check(sockfd);
-            } else if(request == REGIST) {
+            } else if ( request == REGIST ) {
                 regist_check(sockfd);
+            } else if ( request == DELETEACCOUNT ) {
+                delete_account(sockfd);
+            } else if ( request == SEARCHINFO ) {
+                search_info(sockfd);
+            } else if ( request == DOWNLOAD ) {
+                download(sockfd);
+            } else if ( request == CHAT ) {
+                chat(sockfd);
+            } else {
+                printf("%sBugssssssssssss%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
             }
         }
     }
