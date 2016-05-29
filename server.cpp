@@ -19,6 +19,18 @@
 Data::LoginData loginData;
 std::set<std::string> file_sets;
 
+struct thread_info{
+    int sockfd;
+    std::string address;
+    int port;
+
+    thread_info(int sockfd, std::string address, int port){
+        this->sockfd = sockfd;
+        this->address = address;
+        this->port = port;
+    }
+};
+
 void update(){
     printf("-----------------------------------\n");
     printf("%s[online]\n", ANSI_COLOR_GREEN);
@@ -227,7 +239,7 @@ void regist_check(int sockfd){
     google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(size);
     regist.ParseFromCodedStream(&coded_input);
     coded_input.PopLimit(msgLimit);
-    std::cout << regist.DebugString();
+    //std::cout << regist.DebugString();
 
     //check id and password
     Data::Data newRegist;
@@ -297,8 +309,10 @@ int main(int argc, char** args){
     while( (connectFD = accept(listenFD, (sockaddr*)client_address, &len)) > 0 ){
         char cli_addr[200];
         inet_ntop(AF_INET, &(client_address->sin_addr), cli_addr, INET_ADDRSTRLEN);
+        std::string addr(cli_addr);
+        thread_info* info = new thread_info(connectFD, addr, client_address->sin_port);
         //printf( "Connect from %s %d\n", cli_addr, client_address->sin_port );
-    	if( pthread_create( &tid, NULL, client_connect, (void *)&connectFD ) ){
+    	if( pthread_create( &tid, NULL, client_connect, (void *)info ) ){
     		printf("Thread create error\n");
     		return 1;
     	}
@@ -312,8 +326,13 @@ int main(int argc, char** args){
     return 0;
 }
 
-void* client_connect(void* connectFD){
-    int sockfd = *(int*)connectFD;
+void* client_connect(void* info){
+    thread_info* new_info = (thread_info* )info;
+    int sockfd = new_info -> sockfd;
+    std::string addr = new_info -> address;
+    int port = new_info -> port;
+
+    std::cout << sockfd << " " << addr << " " << port << '\n';
     /*int read_size;
     char client_message[2000];
     char welcome_message[200];
