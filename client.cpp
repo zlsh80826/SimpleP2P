@@ -21,7 +21,7 @@ void client(FILE* fp, int sockfd){
 	sendFileInfo(sockfd);
 
 	while(true){
-		printf("[K]ill\t\t[L]ogout\t[S]earchInfo\n[D]ownload\t[C]hat\n");
+		printf("[K]ill\t\t[L]ogout\t[S]earchInfo\n[D]ownload\t[C]hat\t[O]line\n");
 		std::string cmd;
 		std::cin >> cmd;
 		if( cmd == "K" || cmd == "k" ){
@@ -36,6 +36,8 @@ void client(FILE* fp, int sockfd){
 			download(sockfd);
 		}else if( cmd == "C" || cmd == "c" ){
 			chat(sockfd);
+		}else if( cmd == "O" || cmd == "o"){
+			get_onlien_info(sockfd);
 		}else{
 			printf("%sInvalid Input !%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 		}

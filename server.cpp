@@ -32,7 +32,26 @@ struct thread_info{
 };
 
 void send_online_info(int sockfd){
+    online::OnlineSheet sheet;
+    for(int i=0; i<loginData.logindata_size(); ++i){
+        if( loginData.logindata(i).online() == true){
+            if( loginData.logindata(i).id() != "" ){
+                online::OnlinePerson* person;
+                person = sheet.add_sheets();
+                person->set_name(loginData.logindata(i).id());
+            }
+        }
+    }
 
+    int pkg_size = sheet.ByteSize() + HDR_SIZE;
+    char* pkg = new char[pkg_size];
+    google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+    google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+    coded_output -> WriteVarint32(sheet.ByteSize());
+    sheet.SerializeToCodedStream(coded_output);
+
+    write(sockfd, pkg, pkg_size);
+    delete coded_output;
 }
 
 void update(){

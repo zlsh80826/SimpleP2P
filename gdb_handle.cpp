@@ -10,6 +10,7 @@
 #include "data_login.pb.h"
 #include "check.pb.h"
 #include "file.pb.h"
+#include "online.pb.h"
 #include <iostream>
 #define HDR_SIZE 4
 enum ACTION{LOGIN, REGIST, DELETEACCOUNT, SEARCHINFO, DOWNLOAD, CHAT, LOGOUT, RECVFILEINFO, ONLINEINFO, UNDEFINE};

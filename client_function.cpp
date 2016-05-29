@@ -300,3 +300,32 @@ void sendFileInfo(int sockfd){
 	delete coded_output;
 
 }
+
+bool get_onlien_info(int sockfd){
+	sendAction(sockfd, "onlineinfo");
+
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
+
+    google::protobuf::uint32 pkg_size = readHdr(bufferFST);
+    int byteCount;
+    online::OnlineSheet sheet;
+    char buffer[pkg_size + HDR_SIZE];
+    if( ( byteCount = recv(sockfd, (void *)buffer, pkg_size + HDR_SIZE, MSG_WAITALL) ) == -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, pkg_size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&pkg_size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
+    sheet.ParseFromCodedStream(&coded_input);
+
+    printf("%sOnline: ", ANSI_COLOR_GREEN);
+    for(int i=0; i<sheet.sheets_size(); ++i){
+        std::cout << "\n" << sheet.sheets(i).name();
+    }
+    printf("%s\n", ANSI_COLOR_RESET);
+}
