@@ -191,6 +191,27 @@ void download(int sockfd){
 
 void chat(int sockfd){
     printf("Into chat function\n");
+
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
+
+    google::protobuf::uint32 pkg_size = readHdr(bufferFST);
+    int byteCount;
+    online::OnlinePerson person;
+    char buffer[pkg_size + HDR_SIZE];
+    if( ( byteCount = recv(sockfd, (void *)buffer, pkg_size + HDR_SIZE, MSG_WAITALL) ) == -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, pkg_size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&pkg_size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
+    person.ParseFromCodedStream(&coded_input);
+
+    std::cout << person.DebugString();
 }
 
 void login_check(int sockfd, std::string addr, int port){

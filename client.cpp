@@ -107,7 +107,7 @@ void client(FILE* fp, int sockfd){
 		}else if( cmd == "D" || cmd == "d" ){
 			download(sockfd);
 		}else if( cmd == "C" || cmd == "c" ){
-			chat(sockfd);
+			chat(sockfd, user);
 		}else if( cmd == "O" || cmd == "o"){
 			get_onlien_info(sockfd);
 		}else{

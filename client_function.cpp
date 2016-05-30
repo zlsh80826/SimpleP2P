@@ -271,9 +271,27 @@ void download(int sockfd){
 	sendAction(sockfd, "download");
 }
 
-void chat(int sockfd){
+void chat(int sockfd, login::Login user){
 	printf("Into chat function\n");
 	sendAction(sockfd, "chat");
+
+	printf("With: ");
+	std::string person_name;
+	std::cin >> person_name;
+
+	online::OnlinePerson person;
+	person.set_name(person_name);
+
+	int pkg_size = person.ByteSize() + HDR_SIZE;
+	char* pkg = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+	coded_output -> WriteVarint32(person.ByteSize());
+	person.SerializeToCodedStream(coded_output);
+
+	write(sockfd, pkg, pkg_size);
+	delete coded_output;
+
 }
 
 
