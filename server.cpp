@@ -19,6 +19,10 @@
 Data::LoginData loginData;
 std::set<std::string> file_sets;
 
+void send_port(int sockfd){
+
+}
+
 void send_online_info(int sockfd){
     online::OnlineSheet sheet;
     for(int i=0; i<loginData.logindata_size(); ++i){
@@ -432,6 +436,8 @@ void* client_connect(void* info){
                 recv_file_info(sockfd, file_sets);
             } else if (request == ONLINEINFO){
                 send_online_info(sockfd);
+            } else if (request == PORTREQUEST) {
+                send_port(sockfd);
             } else {
                 printf("%sBugssssssssssss%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
             }

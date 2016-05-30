@@ -8,10 +8,15 @@
 #include "check.pb.h"
 #include "gdb_handle.cpp"
 #include "file.pb.h"
+#include "port.pb.h"
 #include "define.h"
 
-void connect_to_peer(){
+int get_port(int sockfd){
+	sendAction(sockfd, "portrequest");
+}
 
+void connect_to_peer(int sockfd){
+	int port = get_port(sockfd);
 }
 
 bool login_to_server(int sockfd, login::Login* user, int* port){
@@ -313,7 +318,7 @@ void chat(int sockfd, login::Login user){
 			printf("%sRecv !ok%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 		}else{
 			printf("%sRecv ok%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
-			connect_to_peer();
+			connect_to_peer(sockfd);
 		}
 		return;
 	}

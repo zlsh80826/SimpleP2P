@@ -1,0 +1,6 @@
+package port;
+
+message Port {
+	required int32 port_num = 1;
+}
+

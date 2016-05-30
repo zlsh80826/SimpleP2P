@@ -11,9 +11,10 @@
 #include "check.pb.h"
 #include "file.pb.h"
 #include "online.pb.h"
+#include "port.pb.h"
 #include <iostream>
 #define HDR_SIZE 4
-enum ACTION{LOGIN, REGIST, DELETEACCOUNT, SEARCHINFO, DOWNLOAD, CHAT, LOGOUT, RECVFILEINFO, ONLINEINFO, UNDEFINE};
+enum ACTION{LOGIN, REGIST, DELETEACCOUNT, SEARCHINFO, DOWNLOAD, CHAT, LOGOUT, RECVFILEINFO, ONLINEINFO, PORTREQUEST, UNDEFINE};
 
 struct thread_info{
     int sockfd;
@@ -85,6 +86,8 @@ ACTION readAction(int csock, google::protobuf::uint32 size){
         return RECVFILEINFO;
     if( action.action() == "onlineinfo" )
         return ONLINEINFO;
+    if( action.action() == "portrequest" )
+        return PORTREQUEST;
     return UNDEFINE;
  }
 

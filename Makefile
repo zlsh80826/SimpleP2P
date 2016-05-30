@@ -5,10 +5,10 @@ LDFLAGS=-lpthread -lprotobuf
 .PHONY: all
 all: server client
 
-server: server.o login.pb.o action.pb.o regist.pb.o data_login.pb.o check.pb.o file.pb.o online.pb.o
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) server.o regist.pb.o data_login.pb.o login.pb.o action.pb.o online.pb.o check.pb.o file.pb.o -o server
-client: client.o login.pb.o action.pb.o regist.pb.o data_login.pb.o check.pb.o file.pb.o online.pb.o client_function.cpp
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) client.o regist.pb.o data_login.pb.o login.pb.o action.pb.o online.pb.o check.pb.o file.pb.o -o client
+server: server.o login.pb.o action.pb.o regist.pb.o data_login.pb.o check.pb.o file.pb.o online.pb.o port.pb.o
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) server.o regist.pb.o data_login.pb.o login.pb.o action.pb.o port.pb.o online.pb.o check.pb.o file.pb.o -o server
+client: client.o login.pb.o action.pb.o regist.pb.o data_login.pb.o check.pb.o file.pb.o port.pb.o online.pb.o client_function.cpp
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) client.o regist.pb.o data_login.pb.o login.pb.o action.pb.o port.pb.o online.pb.o check.pb.o file.pb.o -o client
 server.o: server.cpp
 
 client.o: client.cpp
@@ -26,6 +26,8 @@ check.pb.o: check.pb.cpp check.pb.h
 file.pb.o: file.pb.cpp file.pb.h
 
 online.pb.o: online.pb.cpp online.pb.h
+
+port.pb.o: port.pb.cpp port.pb.h
 
 .PHONY: clean
 clean:
