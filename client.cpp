@@ -39,11 +39,8 @@ void* client_connect(void* info){
     return 0;
 }
 
-int new_listen_thread(){
+int new_listen_thread(int port_num){
 	int listenFD, connectFD;
-	srand(time(NULL));
-    int port_num = rand()%10000 + 20000;
-    std::cout << port_num << '\n';
 
 	pthread_t tid;
 	socklen_t addrlen, len;
@@ -84,13 +81,15 @@ int new_listen_thread(){
 
 void client(FILE* fp, int sockfd){
 	login::Login user;
-	while( !identity(sockfd, &user) );
+	srand(time(NULL));
+    int port = rand()%10000 + 20000;
+	while( !identity(sockfd, &user, &port) );
 
 	printf("%sWelcome to Simple Peer to Peer server%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
 
-	sendFileInfo(sockfd);
+	std::thread listenThread(new_listen_thread, port);
 
-	std::thread listenThread(new_listen_thread);
+	sendFileInfo(sockfd);
 
 	while(true){
 		printf("[K]ill\t\t[L]ogout\t[S]earchInfo\n[D]ownload\t[C]hat\t\t[O]line\n");

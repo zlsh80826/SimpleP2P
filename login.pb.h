@@ -115,12 +115,21 @@ class Login : public ::google::protobuf::Message {
   inline ::std::string* release_passwd();
   inline void set_allocated_passwd(::std::string* passwd);
 
+  // optional int32 port = 3;
+  inline bool has_port() const;
+  inline void clear_port();
+  static const int kPortFieldNumber = 3;
+  inline ::google::protobuf::int32 port() const;
+  inline void set_port(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:login.Login)
  private:
   inline void set_has_id();
   inline void clear_has_id();
   inline void set_has_passwd();
   inline void clear_has_passwd();
+  inline void set_has_port();
+  inline void clear_has_port();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -128,6 +137,7 @@ class Login : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* id_;
   ::std::string* passwd_;
+  ::google::protobuf::int32 port_;
   friend void  protobuf_AddDesc_login_2eproto();
   friend void protobuf_AssignDesc_login_2eproto();
   friend void protobuf_ShutdownFile_login_2eproto();
@@ -391,6 +401,30 @@ inline void Login::set_allocated_passwd(::std::string* passwd) {
     passwd_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:login.Login.passwd)
+}
+
+// optional int32 port = 3;
+inline bool Login::has_port() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Login::set_has_port() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Login::clear_has_port() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Login::clear_port() {
+  port_ = 0;
+  clear_has_port();
+}
+inline ::google::protobuf::int32 Login::port() const {
+  // @@protoc_insertion_point(field_get:login.Login.port)
+  return port_;
+}
+inline void Login::set_port(::google::protobuf::int32 value) {
+  set_has_port();
+  port_ = value;
+  // @@protoc_insertion_point(field_set:login.Login.port)
 }
 
 // -------------------------------------------------------------------

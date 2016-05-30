@@ -10,7 +10,11 @@
 #include "file.pb.h"
 #include "define.h"
 
-bool login_to_server(int sockfd, login::Login* user){
+void connect_to_peer(){
+
+}
+
+bool login_to_server(int sockfd, login::Login* user, int* port){
 
 	// send login action
 	action::Action action;
@@ -36,6 +40,7 @@ bool login_to_server(int sockfd, login::Login* user){
 	login::Login login;
 	login.set_id(account);
 	login.set_passwd(passwd);
+	login.set_port(*port);
 	pkg_size = login.ByteSize() + HDR_SIZE;
 	char* login_pkg = new char[pkg_size];
 	google::protobuf::io::ArrayOutputStream aosl(login_pkg, pkg_size);
@@ -125,13 +130,13 @@ bool regist_to_server(int sockfd){
 	}
 }
 
-bool identity(int sockfd, login::Login* user){
+bool identity(int sockfd, login::Login* user, int* port){
 	printf("---------------------------------------\n");
 	printf("[L]ogin\t[R]egist\n");
 	std::string command;
 	while( std::cin >> command ){
 		if( command == "L" || command == "l" ){
-			if( login_to_server(sockfd, user) ){
+			if( login_to_server(sockfd, user, port) ){
 				printf("%sLogin success%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
 				return true;
 			}else{
@@ -273,7 +278,6 @@ void download(int sockfd){
 
 void chat(int sockfd, login::Login user){
 	printf("Into chat function\n");
-	sendAction(sockfd, "chat");
 
 	printf("With: ");
 	std::string person_name;
@@ -283,6 +287,8 @@ void chat(int sockfd, login::Login user){
 		printf("%sYou can't chat with yourself%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 		return;
 	}
+
+	sendAction(sockfd, "chat");
 
 	online::OnlinePerson person;
 	person.set_name(person_name);
@@ -307,6 +313,7 @@ void chat(int sockfd, login::Login user){
 			printf("%sRecv !ok%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 		}else{
 			printf("%sRecv ok%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
+			connect_to_peer();
 		}
 		return;
 	}

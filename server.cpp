@@ -222,7 +222,7 @@ void chat(int sockfd){
                 return;
             }
         }
-    }    
+    }
     sendCheck(sockfd, false);
     printf("!ok\n");
 
@@ -254,10 +254,11 @@ void login_check(int sockfd, std::string addr, int port){
             std::string id = loginData.logindata(i).id();
             loginData.mutable_logindata(i)->set_online(true);
             loginData.mutable_logindata(i)->set_ip(addr);
-            loginData.mutable_logindata(i)->set_port(port);
+            loginData.mutable_logindata(i)->set_port(login.port());
             ptr_now = localtime(&loc_now);
             printf("%s[%d:%d:%d] : [%s] login %s\n", ANSI_COLOR_GREEN
             , ptr_now->tm_hour, ptr_now->tm_min, ptr_now->tm_sec, id.c_str(), ANSI_COLOR_RESET);
+            //std::cout << loginData.logindata(i).DebugString();
             return;
         }
     }

@@ -37,9 +37,10 @@ void protobuf_AssignDesc_login_2eproto() {
       "login.proto");
   GOOGLE_CHECK(file != NULL);
   Login_descriptor_ = file->message_type(0);
-  static const int Login_offsets_[2] = {
+  static const int Login_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Login, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Login, passwd_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Login, port_),
   };
   Login_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -102,9 +103,9 @@ void protobuf_AddDesc_login_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\013login.proto\022\005login\"#\n\005Login\022\n\n\002id\030\001 \002("
-    "\t\022\016\n\006passwd\030\002 \002(\t\"(\n\nDeleteInfo\022\n\n\002id\030\001 "
-    "\002(\t\022\016\n\006passwd\030\002 \002(\t", 99);
+    "\n\013login.proto\022\005login\"1\n\005Login\022\n\n\002id\030\001 \002("
+    "\t\022\016\n\006passwd\030\002 \002(\t\022\014\n\004port\030\003 \001(\005\"(\n\nDelet"
+    "eInfo\022\n\n\002id\030\001 \002(\t\022\016\n\006passwd\030\002 \002(\t", 113);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "login.proto", &protobuf_RegisterTypes);
   Login::default_instance_ = new Login();
@@ -126,6 +127,7 @@ struct StaticDescriptorInitializer_login_2eproto {
 #ifndef _MSC_VER
 const int Login::kIdFieldNumber;
 const int Login::kPasswdFieldNumber;
+const int Login::kPortFieldNumber;
 #endif  // !_MSC_VER
 
 Login::Login()
@@ -149,6 +151,7 @@ void Login::SharedCtor() {
   _cached_size_ = 0;
   id_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   passwd_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  port_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -190,7 +193,7 @@ Login* Login::New() const {
 }
 
 void Login::Clear() {
-  if (_has_bits_[0 / 32] & 3) {
+  if (_has_bits_[0 / 32] & 7) {
     if (has_id()) {
       if (id_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         id_->clear();
@@ -201,6 +204,7 @@ void Login::Clear() {
         passwd_->clear();
       }
     }
+    port_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -242,6 +246,21 @@ bool Login::MergePartialFromCodedStream(
             this->passwd().data(), this->passwd().length(),
             ::google::protobuf::internal::WireFormat::PARSE,
             "passwd");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_port;
+        break;
+      }
+
+      // optional int32 port = 3;
+      case 3: {
+        if (tag == 24) {
+         parse_port:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &port_)));
+          set_has_port();
         } else {
           goto handle_unusual;
         }
@@ -294,6 +313,11 @@ void Login::SerializeWithCachedSizes(
       2, this->passwd(), output);
   }
 
+  // optional int32 port = 3;
+  if (has_port()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->port(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -326,6 +350,11 @@ void Login::SerializeWithCachedSizes(
         2, this->passwd(), target);
   }
 
+  // optional int32 port = 3;
+  if (has_port()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->port(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -350,6 +379,13 @@ int Login::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->passwd());
+    }
+
+    // optional int32 port = 3;
+    if (has_port()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->port());
     }
 
   }
@@ -385,6 +421,9 @@ void Login::MergeFrom(const Login& from) {
     if (from.has_passwd()) {
       set_passwd(from.passwd());
     }
+    if (from.has_port()) {
+      set_port(from.port());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -411,6 +450,7 @@ void Login::Swap(Login* other) {
   if (other != this) {
     std::swap(id_, other->id_);
     std::swap(passwd_, other->passwd_);
+    std::swap(port_, other->port_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
