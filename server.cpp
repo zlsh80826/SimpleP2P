@@ -192,6 +192,7 @@ void download(int sockfd){
 void chat(int sockfd){
     printf("Into chat function\n");
 
+    // recv name
     int count;
     char bufferFST[4];
     count = recv(sockfd, bufferFST, 4, MSG_PEEK);
@@ -211,7 +212,20 @@ void chat(int sockfd){
     google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
     person.ParseFromCodedStream(&coded_input);
 
-    std::cout << person.DebugString();
+    // check whether online
+    for(int i=0; i<loginData.logindata_size(); ++i){
+        if( loginData.logindata(i).online() == true ){
+            if( loginData.logindata(i).id() != "" &&
+                loginData.logindata(i).id() == person.name() ){
+                printf("ok\n");
+                sendCheck(sockfd, true);
+                return;
+            }
+        }
+    }    
+    sendCheck(sockfd, false);
+    printf("!ok\n");
+
 }
 
 void login_check(int sockfd, std::string addr, int port){

@@ -279,7 +279,7 @@ void chat(int sockfd, login::Login user){
 	std::string person_name;
 	std::cin >> person_name;
 
-	if( person_name == user.ID() ){
+	if( person_name == user.id() ){
 		printf("%sYou can't chat with yourself%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 		return;
 	}
@@ -296,6 +296,20 @@ void chat(int sockfd, login::Login user){
 
 	write(sockfd, pkg, pkg_size);
 	delete coded_output;
+
+	int count;
+	char buffer[4];
+	count = recv(sockfd, buffer, 4, MSG_PEEK);
+	if(count == -1){
+		printf("recv check pkg error\n");
+	}else{
+		if( !readCheck(sockfd, readHdr(buffer)) ){
+			printf("%sRecv !ok%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+		}else{
+			printf("%sRecv ok%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
+		}
+		return;
+	}
 
 }
 
