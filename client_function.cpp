@@ -10,28 +10,63 @@
 #include "file.pb.h"
 #include "port.pb.h"
 #include "define.h"
+#define MAXLINE 4096
 
-int get_port(int sockfd){
-	sendAction(sockfd, "portrequest");
+port::Port get_port(int sockfd){
 
-	int byteCount;
-	port::Port port;
-	char buffer[siz+4];
-  	if( ( byteCount = recv(csock, (void *)buffer, 4+siz, MSG_WAITALL) )== -1 ){
-        fprintf(stderr, "Error receiving data %d\n", errno);
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
+
+    google::protobuf::uint32 pkg_size = readHdr(bufferFST);
+    int byteCount;
+    port::Port port;
+    char buffer[pkg_size + HDR_SIZE];
+    if( ( byteCount = recv(sockfd, (void *)buffer, pkg_size + HDR_SIZE, MSG_WAITALL) ) == -1 ){
+        perror("Error recviving data");
     }
-    google::protobuf::io::ArrayInputStream ais(buffer,siz+4);
+    google::protobuf::io::ArrayInputStream ais(buffer, pkg_size + HDR_SIZE);
     google::protobuf::io::CodedInputStream coded_input(&ais);
-    coded_input.ReadVarint32(&siz);
-    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(siz);
+    coded_input.ReadVarint32(&pkg_size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
     port.ParseFromCodedStream(&coded_input);
-    coded_input.PopLimit(msgLimit);
-    //std::cout << port.DebugString();
-    return port.port_num();
+    return port;
 }
 
-void connect_to_peer(int sockfd){
-	int port = get_port(sockfd);
+int connect_to_peer(int sock){
+	std::cout << std::endl;
+	port::Port peer_info = get_port(sock);
+	struct sockaddr_in server_address;
+	int sockfd;
+	// create connect descriptor
+	if( (sockfd=socket(AF_INET, SOCK_STREAM, 0)) < 0 )
+		perror("socket create error");
+	//setting server_address
+	bzero( &server_address, sizeof(server_address) );
+	server_address.sin_family=AF_INET;
+	server_address.sin_port=htons(peer_info.port_num());
+	if( inet_pton(AF_INET, peer_info.ip().c_str(), &server_address.sin_addr) <= 0 ){
+		printf("Can't identify IP address %s \n", peer_info.ip().c_str());
+		return 1;
+	}
+	if( connect(sockfd, (sockaddr* )(&server_address), sizeof(server_address)) < 0 ){
+		perror("connect error");
+		return 1;
+	}
+	char sendline[MAXLINE];
+
+	memset(sendline, 0, sizeof(sendline));
+	std::string str;
+	printf("Message:");
+	while( std::cin >> str ){
+		if(std::cin.eof() || str == "q"){
+			break;
+		}
+		printf("Message:");
+		write(sockfd, str.c_str(), str.length());
+	}
 }
 
 bool login_to_server(int sockfd, login::Login* user, int* port){
@@ -330,10 +365,12 @@ void chat(int sockfd, login::Login user){
 		printf("recv check pkg error\n");
 	}else{
 		if( !readCheck(sockfd, readHdr(buffer)) ){
-			printf("%sRecv !ok%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+			printf("%sHe(she) is offline%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 		}else{
-			printf("%sRecv ok%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
-			connect_to_peer(sockfd);
+			//printf("%sRecv ok%s\n", ANSI_COLOR_GREEN, ANSI_COLOR_RESET);
+			std::thread connectThread(connect_to_peer, sockfd);
+			connectThread.join();
+			//printf("?\n");
 		}
 		return;
 	}

@@ -19,11 +19,9 @@
 void* client_connect(void* info){
     thread_info* new_info = (thread_info* )info;
     int sockfd = new_info -> sockfd;
-    std::string addr = new_info -> address;
-    int port = new_info -> port;
 
     int read_size;
-    char client_message[200];
+    char client_message[MAXLINE];
     while( (read_size = recv(sockfd, client_message, 2000, 0)) > 0 ){
 		client_message[read_size] = '\0';
         printf("%s\n", client_message);
@@ -59,7 +57,6 @@ int new_listen_thread(int port_num){
         printf("bind error");
         return 1;
     }
-
     // start listen and backlog is the maxium of connection Simultaneous
     if (-1 == listen(listenFD, BACKLOG)) {
         perror("listen");
@@ -71,11 +68,12 @@ int new_listen_thread(int port_num){
         inet_ntop(AF_INET, &(client_address->sin_addr), cli_addr, INET_ADDRSTRLEN);
         std::string addr(cli_addr);
         thread_info* info = new thread_info(connectFD, addr, client_address->sin_port);
-        //printf( "Connect from %s %d\n", cli_addr, client_address->sin_port );
-    	if( pthread_create( &tid, NULL, client_connect, (void *)info ) ){
+        printf( "Connect from %s %d\n", cli_addr, client_address->sin_port );
+    	/*if( pthread_create( &tid, NULL, client_connect, (void *)info ) ){
     		printf("Thread create error\n");
     		return 1;
-    	}
+    	}*/
+    	client_connect(info);
     }
 }
 

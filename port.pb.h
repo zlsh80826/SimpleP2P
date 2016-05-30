@@ -97,15 +97,30 @@ class Port : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 port_num() const;
   inline void set_port_num(::google::protobuf::int32 value);
 
+  // required string ip = 2;
+  inline bool has_ip() const;
+  inline void clear_ip();
+  static const int kIpFieldNumber = 2;
+  inline const ::std::string& ip() const;
+  inline void set_ip(const ::std::string& value);
+  inline void set_ip(const char* value);
+  inline void set_ip(const char* value, size_t size);
+  inline ::std::string* mutable_ip();
+  inline ::std::string* release_ip();
+  inline void set_allocated_ip(::std::string* ip);
+
   // @@protoc_insertion_point(class_scope:port.Port)
  private:
   inline void set_has_port_num();
   inline void clear_has_port_num();
+  inline void set_has_ip();
+  inline void clear_has_ip();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
+  ::std::string* ip_;
   ::google::protobuf::int32 port_num_;
   friend void  protobuf_AddDesc_port_2eproto();
   friend void protobuf_AssignDesc_port_2eproto();
@@ -143,6 +158,82 @@ inline void Port::set_port_num(::google::protobuf::int32 value) {
   set_has_port_num();
   port_num_ = value;
   // @@protoc_insertion_point(field_set:port.Port.port_num)
+}
+
+// required string ip = 2;
+inline bool Port::has_ip() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Port::set_has_ip() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Port::clear_has_ip() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Port::clear_ip() {
+  if (ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_->clear();
+  }
+  clear_has_ip();
+}
+inline const ::std::string& Port::ip() const {
+  // @@protoc_insertion_point(field_get:port.Port.ip)
+  return *ip_;
+}
+inline void Port::set_ip(const ::std::string& value) {
+  set_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_ = new ::std::string;
+  }
+  ip_->assign(value);
+  // @@protoc_insertion_point(field_set:port.Port.ip)
+}
+inline void Port::set_ip(const char* value) {
+  set_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_ = new ::std::string;
+  }
+  ip_->assign(value);
+  // @@protoc_insertion_point(field_set_char:port.Port.ip)
+}
+inline void Port::set_ip(const char* value, size_t size) {
+  set_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_ = new ::std::string;
+  }
+  ip_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:port.Port.ip)
+}
+inline ::std::string* Port::mutable_ip() {
+  set_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    ip_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:port.Port.ip)
+  return ip_;
+}
+inline ::std::string* Port::release_ip() {
+  clear_has_ip();
+  if (ip_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = ip_;
+    ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void Port::set_allocated_ip(::std::string* ip) {
+  if (ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete ip_;
+  }
+  if (ip) {
+    set_has_ip();
+    ip_ = ip;
+  } else {
+    clear_has_ip();
+    ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:port.Port.ip)
 }
 
 

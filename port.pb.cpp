@@ -34,8 +34,9 @@ void protobuf_AssignDesc_port_2eproto() {
       "port.proto");
   GOOGLE_CHECK(file != NULL);
   Port_descriptor_ = file->message_type(0);
-  static const int Port_offsets_[1] = {
+  static const int Port_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Port, port_num_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Port, ip_),
   };
   Port_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -78,8 +79,8 @@ void protobuf_AddDesc_port_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\nport.proto\022\004port\"\030\n\004Port\022\020\n\010port_num\030\001"
-    " \002(\005", 44);
+    "\n\nport.proto\022\004port\"$\n\004Port\022\020\n\010port_num\030\001"
+    " \002(\005\022\n\n\002ip\030\002 \002(\t", 56);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "port.proto", &protobuf_RegisterTypes);
   Port::default_instance_ = new Port();
@@ -98,6 +99,7 @@ struct StaticDescriptorInitializer_port_2eproto {
 
 #ifndef _MSC_VER
 const int Port::kPortNumFieldNumber;
+const int Port::kIpFieldNumber;
 #endif  // !_MSC_VER
 
 Port::Port()
@@ -117,8 +119,10 @@ Port::Port(const Port& from)
 }
 
 void Port::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   port_num_ = 0;
+  ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -128,6 +132,9 @@ Port::~Port() {
 }
 
 void Port::SharedDtor() {
+  if (ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete ip_;
+  }
   if (this != default_instance_) {
   }
 }
@@ -154,7 +161,14 @@ Port* Port::New() const {
 }
 
 void Port::Clear() {
-  port_num_ = 0;
+  if (_has_bits_[0 / 32] & 3) {
+    port_num_ = 0;
+    if (has_ip()) {
+      if (ip_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        ip_->clear();
+      }
+    }
+  }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -176,6 +190,23 @@ bool Port::MergePartialFromCodedStream(
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &port_num_)));
           set_has_port_num();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_ip;
+        break;
+      }
+
+      // required string ip = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_ip:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_ip()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->ip().data(), this->ip().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "ip");
         } else {
           goto handle_unusual;
         }
@@ -213,6 +244,16 @@ void Port::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->port_num(), output);
   }
 
+  // required string ip = 2;
+  if (has_ip()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->ip().data(), this->ip().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "ip");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      2, this->ip(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -226,6 +267,17 @@ void Port::SerializeWithCachedSizes(
   // required int32 port_num = 1;
   if (has_port_num()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->port_num(), target);
+  }
+
+  // required string ip = 2;
+  if (has_ip()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->ip().data(), this->ip().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "ip");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->ip(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -245,6 +297,13 @@ int Port::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->port_num());
+    }
+
+    // required string ip = 2;
+    if (has_ip()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->ip());
     }
 
   }
@@ -277,6 +336,9 @@ void Port::MergeFrom(const Port& from) {
     if (from.has_port_num()) {
       set_port_num(from.port_num());
     }
+    if (from.has_ip()) {
+      set_ip(from.ip());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -294,7 +356,7 @@ void Port::CopyFrom(const Port& from) {
 }
 
 bool Port::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
 
   return true;
 }
@@ -302,6 +364,7 @@ bool Port::IsInitialized() const {
 void Port::Swap(Port* other) {
   if (other != this) {
     std::swap(port_num_, other->port_num_);
+    std::swap(ip_, other->ip_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

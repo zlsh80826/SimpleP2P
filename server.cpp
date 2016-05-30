@@ -19,8 +19,20 @@
 Data::LoginData loginData;
 std::set<std::string> file_sets;
 
-void send_port(int sockfd){
+void send_port(int sockfd, int port_num, std::string ip){
+    port::Port port;
+    port.set_port_num(port_num);
+    port.set_ip(ip);
 
+    int pkg_size = port.ByteSize() + HDR_SIZE;
+    char* pkg = new char[pkg_size];
+    google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+    google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+    coded_output -> WriteVarint32(port.ByteSize());
+    port.SerializeToCodedStream(coded_output);
+
+    write(sockfd, pkg, pkg_size);
+    delete coded_output;
 }
 
 void send_online_info(int sockfd){
@@ -194,7 +206,6 @@ void download(int sockfd){
 }
 
 void chat(int sockfd){
-    printf("Into chat function\n");
 
     // recv name
     int count;
@@ -221,8 +232,8 @@ void chat(int sockfd){
         if( loginData.logindata(i).online() == true ){
             if( loginData.logindata(i).id() != "" &&
                 loginData.logindata(i).id() == person.name() ){
-                printf("ok\n");
                 sendCheck(sockfd, true);
+                send_port(sockfd, loginData.logindata(i).port(), loginData.logindata(i).ip());
                 return;
             }
         }
@@ -437,7 +448,7 @@ void* client_connect(void* info){
             } else if (request == ONLINEINFO){
                 send_online_info(sockfd);
             } else if (request == PORTREQUEST) {
-                send_port(sockfd);
+                //send_port(sockfd);
             } else {
                 printf("%sBugssssssssssss%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
             }
