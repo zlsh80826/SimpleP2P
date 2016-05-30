@@ -279,6 +279,11 @@ void chat(int sockfd, login::Login user){
 	std::string person_name;
 	std::cin >> person_name;
 
+	if( person_name == user.ID() ){
+		printf("%sYou can't chat with yourself%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+		return;
+	}
+
 	online::OnlinePerson person;
 	person.set_name(person_name);
 
