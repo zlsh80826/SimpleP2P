@@ -15,9 +15,10 @@
 #include "define.h"
 #include <time.h>
 #include <map>
+#include <set>
 #define BACKLOG 30
 Data::LoginData loginData;
-std::map< std::string, int > file_sets;
+std::map< std::string, std::set<std::string> > file_sets;
 
 void send_port(int sockfd, int port_num, std::string ip){
     port::Port port;
@@ -82,7 +83,17 @@ void update(){
     }
     out.close();
 }
-void logout_update(int sockfd, std::map<std::string, int> &file_sets){
+
+void print_file(std::set<std::string> &file){
+    if(file.empty())
+        return;
+    for(auto it=file.begin(); it!=file.end(); ++it){
+        std::cout << " " << *it;
+    }
+    std::cout << '\n';
+}
+
+void logout_update(int sockfd, std::map<std::string, std::set<std::string> > &file_sets, std::string name){
     int count;
     char bufferFST[4];
     count = recv(sockfd, bufferFST, 4, MSG_PEEK);
@@ -102,23 +113,24 @@ void logout_update(int sockfd, std::map<std::string, int> &file_sets){
     google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
     files.ParseFromCodedStream(&coded_input);
 
-    printf("%s\nFile update: ", ANSI_COLOR_GREEN);
+    printf("%s\nFile update:\n ", ANSI_COLOR_GREEN);
     for(int i=0; i<files.files_size(); ++i){
         file::File file = files.files(i);
         if( file_sets.find( file.file_name() ) == file_sets.end() ){
-            //file_sets[file.file_name()] = 1;
-            //std::cout << file.file_name() << ": 1" << '\n';
             std::cout << "Bugssssssssssss" << std::endl;
         }else{
-            -- file_sets[file.file_name()];
-            std::cout << file.file_name() << ": " << file_sets[file.file_name()] << '\n';
+            file_sets[file.file_name()].erase(name);
+            if( !file_sets[file.file_name()].empty() ){
+                std::cout << file.file_name() << ":" ;
+                print_file(file_sets[file.file_name()]);
+            }
         }
     }
     printf("%s\n", ANSI_COLOR_RESET);
     update();
 }
 
-void logout(int sockfd, std::map<std::string, int> &file_sets){
+void logout(int sockfd, std::map<std::string, std::set<std::string> > &file_sets){
     //recv logout info
     int count;
     char bufferFST[4];
@@ -146,14 +158,14 @@ void logout(int sockfd, std::map<std::string, int> &file_sets){
             ptr_now = localtime(&loc_now);
             printf("%s[%d:%d:%d] : [%s] logout %s\n", ANSI_COLOR_RED
             , ptr_now->tm_hour, ptr_now->tm_min, ptr_now->tm_sec, id.c_str(), ANSI_COLOR_RESET);
-            logout_update(sockfd, file_sets);
+            logout_update(sockfd, file_sets, login.id());
             return;
         }
     }
     return;
 }
 
-void recv_file_info(int sockfd, std::map<std::string, int> &file_sets){
+void recv_file_info(int sockfd, std::map<std::string, std::set<std::string> > &file_sets, login::Login user){
     int count;
     char bufferFST[4];
     count = recv(sockfd, bufferFST, 4, MSG_PEEK);
@@ -177,12 +189,14 @@ void recv_file_info(int sockfd, std::map<std::string, int> &file_sets){
     for(int i=0; i<files.files_size(); ++i){
         file::File file = files.files(i);
         if( file_sets.find( file.file_name() ) == file_sets.end() ){
-            file_sets[file.file_name()] = 1;
-            std::cout << file.file_name() << ": 1" << '\n';
+            file_sets[file.file_name()].insert(user.id());
+            std::cout << file.file_name() << ":";
+            print_file(file_sets[file.file_name()]);
         }
         else{
-            ++ file_sets[file.file_name()];
-            std::cout << file.file_name() << ": " << file_sets[file.file_name()] << '\n';
+            file_sets[file.file_name()].insert(user.id());
+            std::cout << file.file_name() << ":";
+            print_file(file_sets[file.file_name()]);
         }
     }
     printf("%s\n", ANSI_COLOR_RESET);
@@ -282,7 +296,7 @@ void chat(int sockfd){
 
 }
 
-void login_check(int sockfd, std::string addr, int port){
+login::Login login_check(int sockfd, std::string addr, int port){
     //recv login info
     int count;
     char bufferFST[4];
@@ -313,12 +327,12 @@ void login_check(int sockfd, std::string addr, int port){
             printf("%s[%d:%d:%d] : [%s] login %s\n", ANSI_COLOR_GREEN
             , ptr_now->tm_hour, ptr_now->tm_min, ptr_now->tm_sec, id.c_str(), ANSI_COLOR_RESET);
             //std::cout << loginData.logindata(i).DebugString();
-            return;
+            return login;
         }
     }
 
     sendCheck(sockfd, false);
-    return;
+    return login;
 }
 
 void regist_check(int sockfd){
@@ -457,7 +471,7 @@ void* client_connect(void* info){
 	write(sockfd, pkt, pkg_size);*/
 	//test block
     update();
-
+    login::Login login;
     while( true ){
         int count;
         char buffer[4];
@@ -468,7 +482,7 @@ void* client_connect(void* info){
             ACTION request;
             request = readAction(sockfd, readHdr(buffer));
             if ( request == LOGIN ) {
-                login_check(sockfd, addr, port);
+                login = login_check(sockfd, addr, port);
             } else if ( request == REGIST ) {
                 regist_check(sockfd);
             } else if ( request == DELETEACCOUNT ) {
@@ -483,7 +497,7 @@ void* client_connect(void* info){
                 logout(sockfd, file_sets);
                 break;
             } else if (request == RECVFILEINFO ) {
-                recv_file_info(sockfd, file_sets);
+                recv_file_info(sockfd, file_sets, login);
             } else if (request == ONLINEINFO){
                 send_online_info(sockfd);
             } else if (request == PORTREQUEST) {
