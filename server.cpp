@@ -185,7 +185,7 @@ void recv_file_info(int sockfd, std::map<std::string, std::set<std::string> > &f
     google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
     files.ParseFromCodedStream(&coded_input);
 
-    printf("%sFile update: ", ANSI_COLOR_GREEN);
+    printf("%sFile update: \n", ANSI_COLOR_GREEN);
     for(int i=0; i<files.files_size(); ++i){
         file::File file = files.files(i);
         if( file_sets.find( file.file_name() ) == file_sets.end() ){

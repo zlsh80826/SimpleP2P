@@ -378,15 +378,15 @@ int start_download(int index, download::DownloadInfo info, std::string file_name
 	// steal file
 	FILE* file_ptr;
 	file_ptr = fopen(file_name.c_str(), "wb");
-
+	char message[48];
+	strcpy(message, file_name.c_str());
 	// send file name
-	printf("will send file_name\n");
-	send(sockfd, file_name.c_str(), file_name.size(), 0);
-	printf("will index\n");
+	int file_name_size = file_name.size();
+	send(sockfd, &file_name_size, sizeof(file_name_size), 0);
+	send(sockfd, message, file_name.size(), 0);
 	send(sockfd, &index_, sizeof(index_), 0);
-	printf("will peer_num\n");
 	send(sockfd, &peer_num_, sizeof(peer_num_), 0);
-	printf("sended peer_num\n");
+
 	// get file size
 	long long file_size;
 	recv(sockfd, &file_size, sizeof(file_size), 0);

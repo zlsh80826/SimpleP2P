@@ -51,27 +51,35 @@ int upload(thread_info* info){
     int port = info -> port;
     int index;
     int total;
+    int file_name_size;
 
-    char file_name[200];
+    char file_name[48];
     memset(file_name, 0, sizeof(file_name));
-    printf("will recv file name\n");
-    recv(sockfd, &file_name, sizeof(file_name), 0);
-    printf("will recv index\n");
+    recv(sockfd, &file_name_size, sizeof(file_name_size), 0);
+    int c = recv(sockfd, file_name, file_name_size, MSG_WAITALL);
+    file_name[c] = '\0';
     recv(sockfd, &index, sizeof(index), 0);
-    printf("will recv total\n");
     recv(sockfd, &total, sizeof(total), 0);
-    printf("%d / %d\n", index, total);
 
 	FILE* file_ptr;
+	printf("WTF\n");
 	long long file_size;
+	printf("WTF\n");
 	file_ptr = fopen(file_name, "rb");
+	printf("WTF\n");
 	fseek(file_ptr, 0, SEEK_END);
+	printf("WTF\n");
 	file_size = ftell(file_ptr);
+	printf("WTF\n");
 	rewind(file_ptr);
+	printf("WTF\n");
 	printf("%d\n", file_size);
+	printf("WTF\n");
 
 	send(sockfd, &file_size, sizeof(file_size), 0);
+	printf("WTF\n");
 	fclose(file_ptr);
+	printf("left\n");
 }
 
 
