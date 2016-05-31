@@ -52,8 +52,9 @@ void protobuf_AssignDesc_file_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Files));
   File_descriptor_ = file->message_type(1);
-  static const int File_offsets_[1] = {
+  static const int File_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(File, file_name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(File, file_num_),
   };
   File_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -101,8 +102,8 @@ void protobuf_AddDesc_file_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\nfile.proto\022\004file\"\"\n\005Files\022\031\n\005files\030\001 \003"
-    "(\0132\n.file.File\"\031\n\004File\022\021\n\tfile_name\030\001 \002("
-    "\t", 81);
+    "(\0132\n.file.File\".\n\004File\022\021\n\tfile_name\030\001 \002("
+    "\t\022\023\n\010file_num\030\002 \001(\005:\0011", 102);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "file.proto", &protobuf_RegisterTypes);
   Files::default_instance_ = new Files();
@@ -343,6 +344,7 @@ void Files::Swap(Files* other) {
 
 #ifndef _MSC_VER
 const int File::kFileNameFieldNumber;
+const int File::kFileNumFieldNumber;
 #endif  // !_MSC_VER
 
 File::File()
@@ -365,6 +367,7 @@ void File::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   file_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  file_num_ = 1;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -403,10 +406,13 @@ File* File::New() const {
 }
 
 void File::Clear() {
-  if (has_file_name()) {
-    if (file_name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-      file_name_->clear();
+  if (_has_bits_[0 / 32] & 3) {
+    if (has_file_name()) {
+      if (file_name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        file_name_->clear();
+      }
     }
+    file_num_ = 1;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -431,6 +437,21 @@ bool File::MergePartialFromCodedStream(
             this->file_name().data(), this->file_name().length(),
             ::google::protobuf::internal::WireFormat::PARSE,
             "file_name");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_file_num;
+        break;
+      }
+
+      // optional int32 file_num = 2 [default = 1];
+      case 2: {
+        if (tag == 16) {
+         parse_file_num:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &file_num_)));
+          set_has_file_num();
         } else {
           goto handle_unusual;
         }
@@ -473,6 +494,11 @@ void File::SerializeWithCachedSizes(
       1, this->file_name(), output);
   }
 
+  // optional int32 file_num = 2 [default = 1];
+  if (has_file_num()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->file_num(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -494,6 +520,11 @@ void File::SerializeWithCachedSizes(
         1, this->file_name(), target);
   }
 
+  // optional int32 file_num = 2 [default = 1];
+  if (has_file_num()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->file_num(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -511,6 +542,13 @@ int File::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->file_name());
+    }
+
+    // optional int32 file_num = 2 [default = 1];
+    if (has_file_num()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->file_num());
     }
 
   }
@@ -543,6 +581,9 @@ void File::MergeFrom(const File& from) {
     if (from.has_file_name()) {
       set_file_name(from.file_name());
     }
+    if (from.has_file_num()) {
+      set_file_num(from.file_num());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -568,6 +609,7 @@ bool File::IsInitialized() const {
 void File::Swap(File* other) {
   if (other != this) {
     std::swap(file_name_, other->file_name_);
+    std::swap(file_num_, other->file_num_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

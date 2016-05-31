@@ -6,4 +6,5 @@ message Files {
 
 message File {
 	required string file_name = 1;
+	optional int32 file_num = 2 [default = 1];
 }

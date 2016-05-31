@@ -14,10 +14,10 @@
 #include "gdb_handle.cpp"
 #include "define.h"
 #include <time.h>
-#include <set>
+#include <map>
 #define BACKLOG 30
 Data::LoginData loginData;
-std::set<std::string> file_sets;
+std::map< std::string, int > file_sets;
 
 void send_port(int sockfd, int port_num, std::string ip){
     port::Port port;
@@ -82,8 +82,43 @@ void update(){
     }
     out.close();
 }
+void logout_update(int sockfd, std::map<std::string, int> &file_sets){
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
 
-void logout(int sockfd){
+    google::protobuf::uint32 pkg_size = readHdr(bufferFST);
+    int byteCount;
+    file::Files files;
+    char buffer[pkg_size + HDR_SIZE];
+    if( ( byteCount = recv(sockfd, (void *)buffer, pkg_size + HDR_SIZE, MSG_WAITALL) ) == -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, pkg_size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&pkg_size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
+    files.ParseFromCodedStream(&coded_input);
+
+    printf("%s\nFile update: ", ANSI_COLOR_GREEN);
+    for(int i=0; i<files.files_size(); ++i){
+        file::File file = files.files(i);
+        if( file_sets.find( file.file_name() ) == file_sets.end() ){
+            //file_sets[file.file_name()] = 1;
+            //std::cout << file.file_name() << ": 1" << '\n';
+            std::cout << "Bugssssssssssss" << std::endl;
+        }else{
+            -- file_sets[file.file_name()];
+            std::cout << file.file_name() << ": " << file_sets[file.file_name()] << '\n';
+        }
+    }
+    printf("%s\n", ANSI_COLOR_RESET);
+    update();
+}
+
+void logout(int sockfd, std::map<std::string, int> &file_sets){
     //recv logout info
     int count;
     char bufferFST[4];
@@ -111,14 +146,14 @@ void logout(int sockfd){
             ptr_now = localtime(&loc_now);
             printf("%s[%d:%d:%d] : [%s] logout %s\n", ANSI_COLOR_RED
             , ptr_now->tm_hour, ptr_now->tm_min, ptr_now->tm_sec, id.c_str(), ANSI_COLOR_RESET);
-            update();
+            logout_update(sockfd, file_sets);
             return;
         }
     }
     return;
 }
 
-void recv_file_info(int sockfd, std::set<std::string> &file_sets){
+void recv_file_info(int sockfd, std::map<std::string, int> &file_sets){
     int count;
     char bufferFST[4];
     count = recv(sockfd, bufferFST, 4, MSG_PEEK);
@@ -138,13 +173,17 @@ void recv_file_info(int sockfd, std::set<std::string> &file_sets){
     google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
     files.ParseFromCodedStream(&coded_input);
 
-    printf("%sNew file: ", ANSI_COLOR_GREEN);
+    printf("%sFile update: ", ANSI_COLOR_GREEN);
     for(int i=0; i<files.files_size(); ++i){
         file::File file = files.files(i);
-        file_sets.insert( file.file_name() );
-        std::cout << file.file_name();
-        if( i != files.files_size()-1 )
-            std::cout << ", ";
+        if( file_sets.find( file.file_name() ) == file_sets.end() ){
+            file_sets[file.file_name()] = 1;
+            std::cout << file.file_name() << ": 1" << '\n';
+        }
+        else{
+            ++ file_sets[file.file_name()];
+            std::cout << file.file_name() << ": " << file_sets[file.file_name()] << '\n';
+        }
     }
     printf("%s\n", ANSI_COLOR_RESET);
     update();
@@ -186,7 +225,7 @@ void search_info(int sockfd){
     file::Files files;
     for(auto items=file_sets.begin(); items!=file_sets.end(); ++items){
         file::File* file = files.add_files();
-        file->set_file_name(*items);
+        file->set_file_name(items -> first );
         //std::cout << file->DebugString();
     }
 
@@ -441,7 +480,7 @@ void* client_connect(void* info){
             } else if ( request == CHAT ) {
                 chat(sockfd);
             } else if (request == LOGOUT ) {
-                logout(sockfd);
+                logout(sockfd, file_sets);
                 break;
             } else if (request == RECVFILEINFO ) {
                 recv_file_info(sockfd, file_sets);

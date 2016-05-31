@@ -185,16 +185,26 @@ class File : public ::google::protobuf::Message {
   inline ::std::string* release_file_name();
   inline void set_allocated_file_name(::std::string* file_name);
 
+  // optional int32 file_num = 2 [default = 1];
+  inline bool has_file_num() const;
+  inline void clear_file_num();
+  static const int kFileNumFieldNumber = 2;
+  inline ::google::protobuf::int32 file_num() const;
+  inline void set_file_num(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:file.File)
  private:
   inline void set_has_file_name();
   inline void clear_has_file_name();
+  inline void set_has_file_num();
+  inline void clear_has_file_num();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::std::string* file_name_;
+  ::google::protobuf::int32 file_num_;
   friend void  protobuf_AddDesc_file_2eproto();
   friend void protobuf_AssignDesc_file_2eproto();
   friend void protobuf_ShutdownFile_file_2eproto();
@@ -317,6 +327,30 @@ inline void File::set_allocated_file_name(::std::string* file_name) {
     file_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:file.File.file_name)
+}
+
+// optional int32 file_num = 2 [default = 1];
+inline bool File::has_file_num() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void File::set_has_file_num() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void File::clear_has_file_num() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void File::clear_file_num() {
+  file_num_ = 1;
+  clear_has_file_num();
+}
+inline ::google::protobuf::int32 File::file_num() const {
+  // @@protoc_insertion_point(field_get:file.File.file_num)
+  return file_num_;
+}
+inline void File::set_file_num(::google::protobuf::int32 value) {
+  set_has_file_num();
+  file_num_ = value;
+  // @@protoc_insertion_point(field_set:file.File.file_num)
 }
 
 

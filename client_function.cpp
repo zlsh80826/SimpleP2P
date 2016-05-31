@@ -12,6 +12,19 @@
 #include "define.h"
 #define MAXLINE 4096
 
+int getdir(std::string dir, std::vector<std::string>& files){
+	DIR *dp;
+	dirent* dirp;
+	if((dp = opendir(dir.c_str())) == NULL)
+		return false;
+	while( (dirp = readdir(dp)) != NULL ){
+		if( strcmp(dirp->d_name, ".")  && strcmp(dirp->d_name, "..") )
+			files.push_back(std::string(dirp->d_name));
+	}
+	closedir(dp);
+	return true;
+}
+
 port::Port get_port(int sockfd){
 
     int count;
@@ -211,16 +224,36 @@ bool identity(int sockfd, login::Login* user, int* port){
 
 void logout(int sockfd, login::Login user){
 	sendAction(sockfd, "logout");
-	int pkg_size = user.ByteSize() + HDR_SIZE;
-	char* login_pkg = new char[pkg_size];
-	google::protobuf::io::ArrayOutputStream aosl(login_pkg, pkg_size);
+	int pkg_sizeF = user.ByteSize() + HDR_SIZE;
+	char* login_pkg = new char[pkg_sizeF];
+	google::protobuf::io::ArrayOutputStream aosl(login_pkg, pkg_sizeF);
 	google::protobuf::io::CodedOutputStream* coded_output_l = new google::protobuf::io::CodedOutputStream(&aosl);
 	coded_output_l -> WriteVarint32(user.ByteSize());
 	user.SerializeToCodedStream(coded_output_l);
 	//std::cout << user.DebugString();
 
-	write(sockfd, login_pkg, pkg_size);
+	write(sockfd, login_pkg, pkg_sizeF);
 	delete coded_output_l;
+
+	std::string dir(".");
+	std::vector<std::string> files_vec;
+    getdir(dir, files_vec);
+
+    file::Files files;
+    for(int i=0; i<files_vec.size(); ++i){
+    	file::File* file = files.add_files();
+    	file->set_file_name(files_vec[i]);
+    }
+
+	int pkg_size = files.ByteSize() + HDR_SIZE;
+	char* pkg = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+	coded_output -> WriteVarint32(files.ByteSize());
+	files.SerializeToCodedStream(coded_output);
+
+	write(sockfd, pkg, pkg_size);
+	delete coded_output;
 
 	printf("%sGood Bye!%s\n", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET);
 }
@@ -281,19 +314,6 @@ bool delete_account(int sockfd, login::Login user){
 		return false;
 	}
 	return false;
-}
-
-int getdir(std::string dir, std::vector<std::string>& files){
-	DIR *dp;
-	dirent* dirp;
-	if((dp = opendir(dir.c_str())) == NULL)
-		return false;
-	while( (dirp = readdir(dp)) != NULL ){
-		if( strcmp(dirp->d_name, ".")  && strcmp(dirp->d_name, "..") )
-			files.push_back(std::string(dirp->d_name));
-	}
-	closedir(dp);
-	return true;
 }
 
 void search_info(int sockfd){
