@@ -1,0 +1,11 @@
+package download;
+
+message DownloadInfo {
+	required int64 file_byte_size = 2;
+	repeated Peer peer_info = 1;
+}
+
+message Peer {
+	required string ip = 1;
+	required int32 port = 2;
+}

@@ -12,6 +12,7 @@
 #include "file.pb.h"
 #include "online.pb.h"
 #include "port.pb.h"
+#include "download_info.pb.h"
 #include <iostream>
 #define HDR_SIZE 4
 enum ACTION{LOGIN, REGIST, DELETEACCOUNT, SEARCHINFO, DOWNLOAD, CHAT, LOGOUT, RECVFILEINFO, ONLINEINFO, PORTREQUEST, UNDEFINE};

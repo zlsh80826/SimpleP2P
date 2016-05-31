@@ -107,7 +107,7 @@ void client(FILE* fp, int sockfd){
 		}else if( cmd == "S" || cmd == "s" ){
 			search_info(sockfd);
 		}else if( cmd == "D" || cmd == "d" ){
-			download(sockfd);
+			download_p2p(sockfd);
 		}else if( cmd == "C" || cmd == "c" ){
 			chat(sockfd, user);
 		}else if( cmd == "O" || cmd == "o"){

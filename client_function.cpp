@@ -347,7 +347,11 @@ void search_info(int sockfd){
     printf("%s\n", ANSI_COLOR_RESET);
 }
 
-void download(int sockfd){
+void get_download_info(int sockfd){
+
+}
+
+void download_p2p(int sockfd){
 	printf("Into download function\n");
 	sendAction(sockfd, "download");
 	std::string file_name;
@@ -372,7 +376,7 @@ void download(int sockfd){
 		printf("recv check pkg error\n");
 	}else{
 		if( readCheck(sockfd, readHdr(buffer)) ){
-			// dosomething
+			get_download_info(sockfd);
 			printf("ok\n");
 		}else{
 			printf("%sNo such file%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);

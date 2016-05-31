@@ -254,7 +254,7 @@ void search_info(int sockfd){
     delete coded_output;
 }
 
-void download(int sockfd){
+void download_p2p(int sockfd){
     printf("Into download function\n");
 
     int count;
@@ -518,7 +518,7 @@ void* client_connect(void* info){
             } else if ( request == SEARCHINFO ) {
                 search_info(sockfd);
             } else if ( request == DOWNLOAD ) {
-                download(sockfd);
+                download_p2p(sockfd);
             } else if ( request == CHAT ) {
                 chat(sockfd);
             } else if (request == LOGOUT ) {
