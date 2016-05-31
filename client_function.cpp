@@ -348,12 +348,31 @@ void search_info(int sockfd){
 }
 
 void get_download_info(int sockfd){
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
 
+    google::protobuf::uint32 pkg_size = readHdr(bufferFST);
+    int byteCount;
+    download::DownloadInfo info;
+    char buffer[pkg_size + HDR_SIZE];
+    if( ( byteCount = recv(sockfd, (void *)buffer, pkg_size + HDR_SIZE, MSG_WAITALL) ) == -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, pkg_size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&pkg_size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
+    info.ParseFromCodedStream(&coded_input);
+
+    std::cout << info.DebugString();
 }
 
 void download_p2p(int sockfd){
-	printf("Into download function\n");
 	sendAction(sockfd, "download");
+	printf("File name: ");
 	std::string file_name;
 	std::cin >> file_name;
 	file::File request_file;
@@ -386,8 +405,6 @@ void download_p2p(int sockfd){
 }
 
 void chat(int sockfd, login::Login user){
-	printf("Into chat function\n");
-
 	printf("With: ");
 	std::string person_name;
 	std::cin >> person_name;

@@ -254,8 +254,32 @@ void search_info(int sockfd){
     delete coded_output;
 }
 
+void send_download_info(int sockfd, std::set<std::string>& peer_set){
+    download::DownloadInfo peer_info;
+    for(auto it=peer_set.begin(); it!=peer_set.end(); ++it){
+        for(int i=0; i<loginData.logindata_size(); ++i){
+            if( loginData.logindata(i).id() == *it &&
+                loginData.logindata(i).online() == true ) {
+                download::Peer* peer = peer_info.add_peer_info();
+                peer->set_ip(loginData.logindata(i).ip());
+                peer->set_port(loginData.logindata(i).port());
+            }
+        }
+    }
+    peer_info.set_file_byte_size(peer_set.size());
+
+    int pkg_size = peer_info.ByteSize() + HDR_SIZE;
+    char* pkg = new char[pkg_size];
+    google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+    google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+    coded_output -> WriteVarint32(peer_info.ByteSize());
+    peer_info.SerializeToCodedStream(coded_output);
+
+    write(sockfd, pkg, pkg_size);
+    delete coded_output;
+}
+
 void download_p2p(int sockfd){
-    printf("Into download function\n");
 
     int count;
     char bufferFST[4];
@@ -277,8 +301,9 @@ void download_p2p(int sockfd){
     request_file.ParseFromCodedStream(&coded_input);
 
     for(auto it=file_sets.begin(); it!=file_sets.end(); ++it){
-        if( it-> first == request_file.file_name() ){
+        if( it-> first == request_file.file_name() && !it->second.empty() ){
             sendCheck(sockfd, true);
+            send_download_info(sockfd, it->second);
             return;
         }
     }
