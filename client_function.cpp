@@ -62,6 +62,7 @@ int connect_to_peer(int sock){
 	printf("Message:");
 	while( std::cin >> str ){
 		if(std::cin.eof() || str == "q"){
+			write(sockfd, "q", 1);
 			break;
 		}
 		printf("Message:");
