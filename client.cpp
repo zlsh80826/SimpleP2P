@@ -45,6 +45,36 @@ void* client_connect(void* info){
     return 0;
 }
 
+int upload(thread_info* info){
+    int sockfd =info -> sockfd;
+    std::string ip = info -> address;
+    int port = info -> port;
+    int index;
+    int total;
+
+    char file_name[200];
+    memset(file_name, 0, sizeof(file_name));
+    printf("will recv file name\n");
+    recv(sockfd, &file_name, sizeof(file_name), 0);
+    printf("will recv index\n");
+    recv(sockfd, &index, sizeof(index), 0);
+    printf("will recv total\n");
+    recv(sockfd, &total, sizeof(total), 0);
+    printf("%d / %d\n", index, total);
+
+	FILE* file_ptr;
+	long long file_size;
+	file_ptr = fopen(file_name, "rb");
+	fseek(file_ptr, 0, SEEK_END);
+	file_size = ftell(file_ptr);
+	rewind(file_ptr);
+	printf("%d\n", file_size);
+
+	send(sockfd, &file_size, sizeof(file_size), 0);
+	fclose(file_ptr);
+}
+
+
 int new_listen_thread(int port_num){
 	int listenFD, connectFD;
 
@@ -76,8 +106,23 @@ int new_listen_thread(int port_num){
         inet_ntop(AF_INET, &(client_address->sin_addr), cli_addr, INET_ADDRSTRLEN);
         std::string addr(cli_addr);
         thread_info* info = new thread_info(connectFD, addr, client_address->sin_port);
-    	std::thread chatThread(client_connect, info);
-    	chatThread.detach();
+        int count;
+        char buffer[4];
+        count = recv(connectFD, buffer, 4, MSG_PEEK);
+        if(count == -1)
+            perror("Recv with error");
+        else{
+            ACTION request;
+            request = readAction(connectFD, readHdr(buffer));
+	        if( request == PEERMESSAGE ){
+	    		std::thread chatThread(client_connect, info);
+	    		chatThread.detach();
+	    	}else if(request == ASKFILE){
+	    		printf("will into thread\n");
+	    		std::thread uploadThread(upload, info);
+	    		uploadThread.detach();
+	    	}
+	    }
 
     }
 }

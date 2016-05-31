@@ -68,6 +68,9 @@ int connect_to_peer(int sock){
 		perror("connect error");
 		return 1;
 	}
+
+	sendAction(sockfd, "messagetopeer");
+
 	char sendline[MAXLINE];
 
 	memset(sendline, 0, sizeof(sendline));
@@ -347,7 +350,61 @@ void search_info(int sockfd){
     printf("%s\n", ANSI_COLOR_RESET);
 }
 
-void get_download_info(int sockfd){
+int start_download(int index, download::DownloadInfo info, std::string file_name, int peer_num){
+	struct sockaddr_in server_address;
+	int sockfd;
+	int index_ = index;
+	int peer_num_ = peer_num;
+	// create connect descriptor
+	if( (sockfd=socket(AF_INET, SOCK_STREAM, 0)) < 0 )
+		perror("socket create error");
+	//setting server_address
+	bzero( &server_address, sizeof(server_address) );
+	server_address.sin_family=AF_INET;
+	server_address.sin_port=htons( info.peer_info(index).port() );
+	if( inet_pton(AF_INET, info.peer_info(index).ip().c_str(), &server_address.sin_addr) <= 0 ){
+		printf("Can't identify IP address %s \n", info.peer_info(index).ip().c_str());
+		return 1;
+	}
+	if( connect(sockfd, (sockaddr* )(&server_address), sizeof(server_address)) < 0 ){
+		perror("connect error");
+		return 1;
+	}
+
+
+	sendAction(sockfd, "askfile");
+	// printf("client ask file with %d\n", index);
+
+	// steal file
+	FILE* file_ptr;
+	file_ptr = fopen(file_name.c_str(), "wb");
+
+	// send file name
+	printf("will send file_name\n");
+	send(sockfd, file_name.c_str(), file_name.size(), 0);
+	printf("will index\n");
+	send(sockfd, &index_, sizeof(index_), 0);
+	printf("will peer_num\n");
+	send(sockfd, &peer_num_, sizeof(peer_num_), 0);
+	printf("sended peer_num\n");
+	// get file size
+	long long file_size;
+	recv(sockfd, &file_size, sizeof(file_size), 0);
+	printf("%lld\n", file_size);
+}
+
+void download_divide(int sockfd, download::DownloadInfo info, std::string file_name){
+	int peer_num = info.file_byte_size();
+
+	for(int i=0; i<peer_num; ++i){
+		std::thread downloadThread(start_download, i, info, file_name, peer_num);
+		printf("before detach");
+		downloadThread.detach();
+		printf("after detach");
+	}
+}
+
+void get_download_info(int sockfd, std::string file_name){
     int count;
     char bufferFST[4];
     count = recv(sockfd, bufferFST, 4, MSG_PEEK);
@@ -368,13 +425,25 @@ void get_download_info(int sockfd){
     info.ParseFromCodedStream(&coded_input);
 
     std::cout << info.DebugString();
+    download_divide(sockfd, info, file_name);
 }
 
 void download_p2p(int sockfd){
-	sendAction(sockfd, "download");
 	printf("File name: ");
 	std::string file_name;
 	std::cin >> file_name;
+	std::string dir(".");
+	std::vector<std::string> files_vec;
+    getdir(dir, files_vec);
+    for(auto it=files_vec.begin(); it!=files_vec.end(); it++){
+    	if( *it == file_name ){
+			printf("%sYou already have this file%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+			return;
+    	}
+    }
+
+    // send download action
+    sendAction(sockfd, "download");
 	file::File request_file;
 	request_file.set_file_name(file_name);
 
@@ -395,7 +464,7 @@ void download_p2p(int sockfd){
 		printf("recv check pkg error\n");
 	}else{
 		if( readCheck(sockfd, readHdr(buffer)) ){
-			get_download_info(sockfd);
+			get_download_info(sockfd, file_name);
 			printf("ok\n");
 		}else{
 			printf("%sNo such file%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
