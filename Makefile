@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS=-std=c++11
-LDFLAGS=-lpthread -lprotobuf
+LDFLAGS=-lpthread -pthread -lprotobuf
 
 .PHONY: all
 all: server client

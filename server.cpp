@@ -256,6 +256,34 @@ void search_info(int sockfd){
 
 void download(int sockfd){
     printf("Into download function\n");
+
+    int count;
+    char bufferFST[4];
+    count = recv(sockfd, bufferFST, 4, MSG_PEEK);
+    if(count == -1)
+        perror("Recv with error");
+
+    google::protobuf::uint32 pkg_size = readHdr(bufferFST);
+    int byteCount;
+    file::File request_file;
+    char buffer[pkg_size + HDR_SIZE];
+    if( ( byteCount = recv(sockfd, (void *)buffer, pkg_size + HDR_SIZE, MSG_WAITALL) ) == -1 ){
+        perror("Error recviving data");
+    }
+    google::protobuf::io::ArrayInputStream ais(buffer, pkg_size + HDR_SIZE);
+    google::protobuf::io::CodedInputStream coded_input(&ais);
+    coded_input.ReadVarint32(&pkg_size);
+    google::protobuf::io::CodedInputStream::Limit msgLimit = coded_input.PushLimit(pkg_size);
+    request_file.ParseFromCodedStream(&coded_input);
+
+    for(auto it=file_sets.begin(); it!=file_sets.end(); ++it){
+        if( it-> first == request_file.file_name() ){
+            sendCheck(sockfd, true);
+            return;
+        }
+    }
+    sendCheck(sockfd, false);
+    return;
 }
 
 void chat(int sockfd){

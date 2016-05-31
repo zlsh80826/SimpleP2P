@@ -350,6 +350,35 @@ void search_info(int sockfd){
 void download(int sockfd){
 	printf("Into download function\n");
 	sendAction(sockfd, "download");
+	std::string file_name;
+	std::cin >> file_name;
+	file::File request_file;
+	request_file.set_file_name(file_name);
+
+	int pkg_size = request_file.ByteSize() + HDR_SIZE;
+	char* pkg = new char[pkg_size];
+	google::protobuf::io::ArrayOutputStream aos(pkg, pkg_size);
+	google::protobuf::io::CodedOutputStream* coded_output = new google::protobuf::io::CodedOutputStream(&aos);
+	coded_output -> WriteVarint32(request_file.ByteSize());
+	request_file.SerializeToCodedStream(coded_output);
+
+	write(sockfd, pkg, pkg_size);
+	delete coded_output;
+
+	int count;
+	char buffer[4];
+	count = recv(sockfd, buffer, 4, MSG_PEEK);
+	if(count == -1){
+		printf("recv check pkg error\n");
+	}else{
+		if( readCheck(sockfd, readHdr(buffer)) ){
+			// dosomething
+			printf("ok\n");
+		}else{
+			printf("%sNo such file%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
+		}
+	}
+
 }
 
 void chat(int sockfd, login::Login user){
