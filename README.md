@@ -1,4 +1,8 @@
-# Simple P2P 
+# C++ / Simple peer to peer(P2P)
+
+#Overview
+Use Google Prtocaol Buffer to implement C++ serialize,
+and simple P2P function
 
 ## Client
 * chat with peer
