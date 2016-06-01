@@ -15,6 +15,7 @@
 #include "client_function.cpp"
 #define MAXLINE 4096
 #define BACKLOG 30
+#define MAX_ 1024
 
 void* client_connect(void* info){
     thread_info* new_info = (thread_info* )info;
@@ -62,24 +63,47 @@ int upload(thread_info* info){
     recv(sockfd, &total, sizeof(total), 0);
 
 	FILE* file_ptr;
-	printf("WTF\n");
 	long long file_size;
-	printf("WTF\n");
 	file_ptr = fopen(file_name, "rb");
-	printf("WTF\n");
 	fseek(file_ptr, 0, SEEK_END);
-	printf("WTF\n");
 	file_size = ftell(file_ptr);
-	printf("WTF\n");
 	rewind(file_ptr);
-	printf("WTF\n");
-	printf("%d\n", file_size);
-	printf("WTF\n");
+
+	//debug
+	printf("%d: Total_size:%d\n", index, file_size);
 
 	send(sockfd, &file_size, sizeof(file_size), 0);
-	printf("WTF\n");
+	fseek(file_ptr, (file_size/total) * index, SEEK_SET);
+	printf("%d: Seek_to:%d\n", index, (file_size/total) * index);
+	if( index == total-1 ){
+		file_size = file_size - (file_size/total)*index;
+	}else{
+		file_size = (file_size/total);
+	}
+	printf("%d: Deal_size:%d\n", index, file_size);
+
+	while(file_size > 0){
+		int pack_size;
+		if(file_size > MAX_){
+			pack_size = MAX_;
+		}else{
+			pack_size = file_size;
+		}
+		send(sockfd, &pack_size, sizeof(pack_size), MSG_WAITALL);
+		char buffer[pack_size];
+		memset(buffer, 0, sizeof(buffer));
+		fread(buffer, sizeof(char), pack_size, file_ptr);
+		int c = send(sockfd, buffer, pack_size, MSG_WAITALL);
+		/*if(sizeof(buffer) < 500)
+			fwrite(buffer, 1, sizeof(buffer), stdin);*/
+		//if(pack_size < 1000)
+		//	printf("%s\n", buffer);
+		printf("%d %d\n", c, pack_size);
+		file_size -= pack_size;
+	}
+	int pack_size = -1;
+	send(sockfd, &pack_size, sizeof(pack_size), 0);
 	fclose(file_ptr);
-	printf("left\n");
 }
 
 

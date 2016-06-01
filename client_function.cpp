@@ -11,6 +11,7 @@
 #include "port.pb.h"
 #include "define.h"
 #define MAXLINE 4096
+#define MAX_ 1024
 
 int getdir(std::string dir, std::vector<std::string>& files){
 	DIR *dp;
@@ -280,7 +281,7 @@ bool delete_account(int sockfd, login::Login user){
 	}
 	printf("Confirm Password:");
 	std::cin >> password;
-	if( user.id() != password ){
+	if( user.passwd() != password ){
 		printf("%sWrong password!%s\n", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 		return false;
 	}
@@ -354,7 +355,7 @@ int start_download(int index, download::DownloadInfo info, std::string file_name
 	struct sockaddr_in server_address;
 	int sockfd;
 	int index_ = index;
-	int peer_num_ = peer_num;
+	int total = peer_num;
 	// create connect descriptor
 	if( (sockfd=socket(AF_INET, SOCK_STREAM, 0)) < 0 )
 		perror("socket create error");
@@ -377,7 +378,7 @@ int start_download(int index, download::DownloadInfo info, std::string file_name
 
 	// steal file
 	FILE* file_ptr;
-	file_ptr = fopen(file_name.c_str(), "wb");
+	file_ptr = fopen(file_name.c_str(), "rb+");
 	char message[48];
 	strcpy(message, file_name.c_str());
 	// send file name
@@ -385,16 +386,51 @@ int start_download(int index, download::DownloadInfo info, std::string file_name
 	send(sockfd, &file_name_size, sizeof(file_name_size), 0);
 	send(sockfd, message, file_name.size(), 0);
 	send(sockfd, &index_, sizeof(index_), 0);
-	send(sockfd, &peer_num_, sizeof(peer_num_), 0);
+	send(sockfd, &total, sizeof(total), 0);
 
 	// get file size
 	long long file_size;
 	recv(sockfd, &file_size, sizeof(file_size), 0);
 	printf("%lld\n", file_size);
+
+	fseek(file_ptr, (file_size/total) * index, SEEK_SET);
+	printf("%d: Seek_to:%d\n", index, (file_size/total) * index);
+
+	if( index == total-1 ){
+		file_size = file_size - (file_size/total)*index;
+	}else{
+		file_size = (file_size/total);
+	}
+	printf("%d: Deal_size:%d\n", index, file_size);
+
+
+	printf("Start:\n");
+	while(true){
+
+		int tmp = ftell(file_ptr);
+
+		int pack_size;
+		recv(sockfd, &pack_size, sizeof(pack_size), MSG_WAITALL);
+		if(pack_size == -1)
+			break;
+		char buf[pack_size];
+		memset(buf, 0, sizeof(buf));
+		int c = recv(sockfd, buf, pack_size, MSG_WAITALL);
+
+		fwrite(buf, 1, sizeof(buf), file_ptr);
+
+		printf("%d: write %d~%d\n", index, tmp, ftell(file_ptr));
+		file_size -= pack_size;
+	}
+	printf("end\n");
+	fclose(file_ptr);
 }
 
 void download_divide(int sockfd, download::DownloadInfo info, std::string file_name){
 	int peer_num = info.file_byte_size();
+	FILE* file_ptr;
+	file_ptr = fopen(file_name.c_str(), "wb");
+	fclose(file_ptr);
 
 	for(int i=0; i<peer_num; ++i){
 		std::thread downloadThread(start_download, i, info, file_name, peer_num);

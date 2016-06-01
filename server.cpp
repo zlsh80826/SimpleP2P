@@ -205,8 +205,6 @@ void recv_file_info(int sockfd, std::map<std::string, std::set<std::string> > &f
 
 void delete_account(int sockfd){
 
-    printf("Into delete account function\n");
-
     int count;
     char bufferFST[4];
     count = recv(sockfd, bufferFST, 4, MSG_PEEK);
